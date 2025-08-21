@@ -1,14 +1,14 @@
-import express from 'express';
 import cors from 'cors';
-import helmet from 'helmet';
-import rateLimit from 'express-rate-limit';
 import dotenv from 'dotenv';
-import { connectDatabase } from './config/database';
-import routes from './routes';
-import { errorHandler, notFoundHandler } from './middleware/errorHandler';
+import express from 'express';
+import rateLimit from 'express-rate-limit';
+import helmet from 'helmet';
 
-// Load environment variables
 dotenv.config();
+
+import { connectDatabase } from './config/database';
+import { errorHandler, notFoundHandler } from './middleware/errorHandler';
+import routes from './routes';
 
 const app = express();
 const PORT = process.env.PORT || 3000;

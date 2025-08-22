@@ -22,6 +22,7 @@ const UserSchema: Schema = new Schema({
     unique: true,
     lowercase: true,
     trim: true,
+    index: true,
   },
   name: {
     type: String,
@@ -35,9 +36,5 @@ const UserSchema: Schema = new Schema({
 }, {
   timestamps: true,
 });
-
-// Index for efficient queries
-UserSchema.index({ googleId: 1 });
-UserSchema.index({ email: 1 });
 
 export const User = mongoose.model<IUser>('User', UserSchema);

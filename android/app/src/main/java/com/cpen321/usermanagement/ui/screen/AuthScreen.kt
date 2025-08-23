@@ -1,6 +1,8 @@
 package com.cpen321.usermanagement.ui.screen
 
 import android.app.Activity
+import android.util.Log
+import androidx.activity.ComponentActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
@@ -36,10 +38,13 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.lifecycleScope
 import com.cpen321.usermanagement.R
 import com.cpen321.usermanagement.ui.viewmodel.AuthViewModel
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.common.api.ApiException
+import kotlinx.coroutines.launch
+
 
 @Composable
 fun AuthScreen(
@@ -49,20 +54,6 @@ fun AuthScreen(
     val context = LocalContext.current
     val uiState by authViewModel.uiState.collectAsState()
     val snackbarHostState = remember { SnackbarHostState() }
-    
-    val googleSignInLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.StartActivityForResult()
-    ) { result ->
-        if (result.resultCode == Activity.RESULT_OK) {
-            val task = GoogleSignIn.getSignedInAccountFromIntent(result.data)
-            try {
-                val account = task.getResult(ApiException::class.java)
-                authViewModel.handleGoogleSignInResult(account)
-            } catch (e: ApiException) {
-                // Handle sign-in failure
-            }
-        }
-    }
     
     LaunchedEffect(uiState.isAuthenticated) {
         if (uiState.isAuthenticated) {
@@ -108,8 +99,17 @@ fun AuthScreen(
             // Google Sign-In Button
             Button(
                 onClick = {
-                    val signInIntent = authViewModel.getGoogleSignInIntent()
-                    googleSignInLauncher.launch(signInIntent)
+                    (context as? ComponentActivity)?.lifecycleScope?.launch {
+                        val result = authViewModel.signInWithGoogle(context)
+                        result.onSuccess { credential ->
+                            // Handle successful sign-in
+                            authViewModel.handleGoogleSignInResult(credential)
+                            Log.d("SignIn", "Signed in: ${credential.id}")
+                        }.onFailure { e ->
+                            // Handle failure
+                            Log.e("SignIn", "Sign-in failed", e)
+                        }
+                    }
                 },
                 modifier = Modifier
                     .fillMaxWidth()

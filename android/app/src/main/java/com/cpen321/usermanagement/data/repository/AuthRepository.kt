@@ -2,6 +2,11 @@ package com.cpen321.usermanagement.data.repository
 
 import android.content.Context
 import android.content.Intent
+import android.util.JsonToken
+import android.util.Log
+import androidx.credentials.Credential
+import androidx.credentials.GetCredentialRequest
+import androidx.credentials.exceptions.GetCredentialException
 import com.cpen321.usermanagement.data.api.RetrofitClient
 import com.cpen321.usermanagement.data.model.ApiResponse
 import com.cpen321.usermanagement.data.model.AuthResponse
@@ -13,45 +18,77 @@ import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
+import com.google.android.libraries.identity.googleid.GetGoogleIdOption
+import androidx.credentials.CredentialManager
+import androidx.credentials.CustomCredential
+import androidx.credentials.GetCredentialResponse
+import androidx.credentials.PasswordCredential
+import androidx.credentials.PublicKeyCredential
+import com.google.android.libraries.identity.googleid.GetSignInWithGoogleOption
+import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
+import com.google.android.libraries.identity.googleid.GoogleIdTokenParsingException
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.tasks.await
+import kotlin.math.log
 
 class AuthRepository(private val context: Context) {
+    private val TAG = "AuthRepository"
     private val apiService = RetrofitClient.apiService
     private val tokenManager = TokenManager(context)
-    
-    private val googleSignInOptions = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-        .requestIdToken("YOUR_GOOGLE_CLIENT_ID") // Replace with your actual Google Client ID
-        .requestEmail()
-        .build()
-    
-    private val googleSignInClient: GoogleSignInClient = GoogleSignIn.getClient(context, googleSignInOptions)
-    
-    fun getGoogleSignInIntent(): Intent = googleSignInClient.signInIntent
-    
-    suspend fun handleGoogleSignInResult(account: GoogleSignInAccount): Result<User> {
+    private val credentialManager = CredentialManager.create(context)
+    val signInWithGoogleOption: GetSignInWithGoogleOption = GetSignInWithGoogleOption.Builder(
+        serverClientId = "482701217775-3maplltka0g713ntauacrc6ueopbgbm5.apps.googleusercontent.com"
+    ).build()
+
+    suspend fun signInWithGoogle(context: Context): Result<GoogleIdTokenCredential> {
+        val request = GetCredentialRequest.Builder()
+            .addCredentialOption(signInWithGoogleOption)
+            .build()
+
         return try {
-            val idToken = account.idToken ?: throw Exception("Failed to get ID token")
-            
-            val response = apiService.googleLogin(GoogleLoginRequest(idToken))
-            
-            if (response.isSuccessful && response.body()?.success == true) {
-                val authResponse = response.body()!!.data!!
-                tokenManager.saveToken(authResponse.token)
-                Result.success(authResponse.user)
-            } else {
-                val errorMessage = if (response.code() == 503) {
-                    "Authentication service temporarily unavailable. Please try again later."
-                } else {
-                    response.body()?.message ?: "Authentication failed"
-                }
-                Result.failure(Exception(errorMessage))
-            }
-        } catch (e: Exception) {
+            val response = credentialManager.getCredential(context, request)
+            handleSignInWithGoogleOption(response)
+        } catch (e: GetCredentialException) {
             Result.failure(e)
         }
     }
-    
+
+    private fun handleSignInWithGoogleOption(
+        result: GetCredentialResponse
+    ): Result<GoogleIdTokenCredential> {
+        val credential = result.credential
+        return when (credential) {
+            is CustomCredential -> {
+                if (credential.type == GoogleIdTokenCredential.TYPE_GOOGLE_ID_TOKEN_CREDENTIAL) {
+                    try {
+                        val googleIdTokenCredential = GoogleIdTokenCredential.createFrom(credential.data)
+                        Result.success(googleIdTokenCredential)
+                    } catch (e: GoogleIdTokenParsingException) {
+                        Result.failure(e)
+                    }
+                } else {
+                    Result.failure(Exception("Unexpected type of credential"))
+                }
+            }
+            else -> Result.failure(Exception("Unexpected type of credential"))
+        }
+    }
+
+    suspend fun googleLogin(tokenId: String): Result<AuthResponse>{
+        val googleLoginReq = GoogleLoginRequest(tokenId)
+        val response = apiService.googleLogin(googleLoginReq)
+        Log.d("FATIIIIIIIIIIIIIIIIII", "Response: ${response.body()}")
+        if (response.isSuccessful && response.body()?.success == true) {
+            val authResponse = response.body()!!.data!!
+            tokenManager.saveToken(authResponse.token)
+            return Result.success(response.body()!!.data!!)
+        } else {
+            val errorMessage = response.body()?.message ?: "Failed to login with Google."
+            throw Exception(errorMessage)
+        }
+    }
+
     suspend fun getProfile(): Result<User> {
         return try {
             val token = tokenManager.getToken().first()
@@ -82,15 +119,10 @@ class AuthRepository(private val context: Context) {
             
             // Clear local token and sign out from Google
             tokenManager.clearToken()
-            googleSignInClient.signOut().await()
-            
             Result.success(Unit)
         } catch (e: Exception) {
             // Even if backend call fails, we should clear local state
             tokenManager.clearToken()
-            try {
-                googleSignInClient.signOut().await()
-            } catch (ignored: Exception) {}
             Result.success(Unit)
         }
     }

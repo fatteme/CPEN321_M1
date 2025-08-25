@@ -1,6 +1,6 @@
 import mongoose, { Document } from "mongoose";
 import z from "zod";
-import { Hobby } from "../constants/hobbies";
+import { HOBBIES, Hobby } from "../constants/hobbies";
 
 export interface IUser extends Document {
   _id: mongoose.Types.ObjectId;
@@ -28,17 +28,14 @@ export const userSchema = z.object({
   hobbies: z.array(z.string()).default([]),
 });
 
+// Create user
 export type CreateUserSchema = z.infer<typeof userSchema>['email' | 'name'| 'googleId'| 'profilePictureUrl'];
 export type UpdateUserSchema = z.infer<typeof userSchema>['email' | 'name'| 'googleId'| 'profilePictureUrl'];
 
-// Hobbies management types
-export const addHobbySchema = z.object({
-  hobby: z.string().min(1).refine((val) => true, { message: "Hobby validation will be done in controller" })
+
+// Update user hobbies
+export const updateUserHobbiesSchema = z.object({
+  hobbies: z.array(z.string()).min(1).refine((val) => val.every(v => HOBBIES.includes(v)), { message: "Hobby must be in the available hobbies list" })
 });
 
-export const removeHobbySchema = z.object({
-  hobby: z.string().min(1).refine((val) => true, { message: "Hobby validation will be done in controller" })
-});
-
-export type AddHobbyRequest = z.infer<typeof addHobbySchema>;
-export type RemoveHobbyRequest = z.infer<typeof removeHobbySchema>;
+export type UpdateUserHobbiesSchema = z.infer<typeof updateUserHobbiesSchema>;

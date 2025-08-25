@@ -1,15 +1,12 @@
 import { Router } from 'express';
 
-import { getProfile, getAvailableHobbies, addHobby, removeHobby } from '../controllers/user.controller';
-import { authenticateToken } from '../middleware/auth.middleware';
+import { getProfile, updateUserHobbies } from '../controllers/user.controller';
 import { validateBody } from '../middleware/validation.middleware';
-import { addHobbySchema, removeHobbySchema } from '../types/user.types';
+import { updateUserHobbiesSchema } from '../types/user.types';
 
 const router = Router();
 
-router.get('/profile', authenticateToken, getProfile);
-router.get('/hobbies/available', getAvailableHobbies);
-router.post('/hobbies/add', authenticateToken, validateBody(addHobbySchema), addHobby);
-router.delete('/hobbies/remove', authenticateToken, validateBody(removeHobbySchema), removeHobby);
+router.get('/profile', getProfile);
+router.post('/hobbies', validateBody(updateUserHobbiesSchema), updateUserHobbies);
 
 export default router;

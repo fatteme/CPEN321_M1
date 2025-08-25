@@ -1,6 +1,7 @@
 import mongoose, { Schema } from 'mongoose';
 
 import type { IUser } from '../types/user.types';
+import { HOBBIES } from '../constants/hobbies';
 
 const userSchema = new Schema<IUser>({
   googleId: {
@@ -31,9 +32,9 @@ const userSchema = new Schema<IUser>({
     default: [],
     validate: {
       validator: function(hobbies: string[]) {
-        return hobbies.every(hobby => typeof hobby === 'string' && hobby.trim().length > 0);
+        return hobbies.every(hobby => HOBBIES.includes(hobby));
       },
-      message: 'Hobbies must be non-empty strings'
+      message: 'Hobbies must be non-empty strings and must be in the available hobbies list'
     }
   }
 }, {

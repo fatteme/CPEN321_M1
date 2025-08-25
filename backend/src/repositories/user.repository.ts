@@ -6,8 +6,6 @@ import { userSchema } from '../types/user.types';
 import logger from '../utils/logger';
 import mongoose from 'mongoose';
 
-
-
 export class UserRepository {
 
     async findById(_id: mongoose.Types.ObjectId): Promise<IUser | null> {
@@ -57,6 +55,16 @@ export class UserRepository {
                 throw new Error('Invalid update data');
             }
             console.error('Error updating user:', error);
+            throw new Error('Failed to update user');
+        }
+    }
+
+    async update(userId: mongoose.Types.ObjectId, user: Partial<IUser>): Promise<IUser | null> {
+        try {
+            const updatedUser = await User.findByIdAndUpdate(userId, user);
+            return updatedUser;
+        } catch (error) {
+            logger.error('Error updating user:', error);
             throw new Error('Failed to update user');
         }
     }

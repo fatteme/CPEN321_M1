@@ -6,16 +6,21 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.MediaService = void 0;
 const fs_1 = __importDefault(require("fs"));
 const path_1 = __importDefault(require("path"));
+
 class MediaService {
     static uploadsDir = 'uploads';
-    static imagesDir = path_1.default.join(this.uploadsDir, 'images');
+    static profilePicturesDir = path_1.default.join(this.uploadsDir, 'profile-pictures');
+    
     static async saveImage(filePath, userId) {
         try {
             const fileExtension = path_1.default.extname(filePath);
             const fileName = `profile-${userId}-${Date.now()}${fileExtension}`;
-            const newPath = path_1.default.join(this.imagesDir, fileName);
+            const newPath = path_1.default.join(this.profilePicturesDir, fileName);
             fs_1.default.renameSync(filePath, newPath);
-            return `${newPath}/${fileName}`;
+            
+            // Return the URL path that the frontend can use to access the image
+            // The backend serves static files at /uploads, so we return the relative path from there
+            return `/uploads/profile-pictures/${fileName}`;
         }
         catch (error) {
             if (fs_1.default.existsSync(filePath)) {

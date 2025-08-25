@@ -60,6 +60,7 @@ import coil.compose.AsyncImage
 import com.cpen321.usermanagement.R
 import com.cpen321.usermanagement.ui.viewmodel.ProfileViewModel
 import com.cpen321.usermanagement.ui.components.ImagePicker
+import com.cpen321.usermanagement.data.api.RetrofitClient
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -155,7 +156,7 @@ fun ProfileScreen(
                                     modifier = Modifier.size(120.dp)
                                 ) {
                                     AsyncImage(
-                                        model = user.profilePicture,
+                                        model = RetrofitClient.getImageUrl(user.profilePicture),
                                         contentDescription = "Profile Picture",
                                         modifier = Modifier
                                             .fillMaxSize()

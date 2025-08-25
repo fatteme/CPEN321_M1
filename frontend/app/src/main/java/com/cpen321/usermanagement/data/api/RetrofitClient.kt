@@ -28,4 +28,17 @@ object RetrofitClient {
         .build()
     
     val apiService: ApiService = retrofit.create(ApiService::class.java)
+    
+    /**
+     * Constructs the full URL for an image by combining the image base URL with the image path
+     * @param imagePath The image path returned from the backend (e.g., /uploads/profile-pictures/filename.jpg)
+     * @return The complete URL that can be used to display the image
+     */
+    fun getImageUrl(imagePath: String): String {
+        return if (imagePath.startsWith("/")) {
+            IMAGE_BASE_URL + imagePath
+        } else {
+            IMAGE_BASE_URL + "/" + imagePath
+        }
+    }
 }

@@ -3,17 +3,19 @@ import path from 'path';
 
 export class MediaService {
   private static readonly uploadsDir = 'uploads';
-  private static readonly imagesDir = path.join(this.uploadsDir, 'images');
+  private static readonly profilePicturesDir = path.join(this.uploadsDir, 'profile-pictures');
 
   static async saveImage(filePath: string, userId: string): Promise<string> {
     try {
       const fileExtension = path.extname(filePath);
       const fileName = `profile-${userId}-${Date.now()}${fileExtension}`;
-      const newPath = path.join(this.imagesDir, fileName);
+      const newPath = path.join(this.profilePicturesDir, fileName);
 
       fs.renameSync(filePath, newPath);
       
-      return `${newPath}/${fileName}`;
+      // Return the URL path that the frontend can use to access the image
+      // The backend serves static files at /uploads, so we return the relative path from there
+      return `/uploads/profile-pictures/${fileName}`;
     } catch (error) {
       if (fs.existsSync(filePath)) {
         fs.unlinkSync(filePath);

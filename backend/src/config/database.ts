@@ -1,34 +1,42 @@
 import mongoose from 'mongoose';
+import { migrateUsersToIncludeHobbies } from '../utils/migrate';
 
-export const connectDatabase = async (): Promise<void> => {
+export const connectDB = async (): Promise<void> => {
   try {
-    const mongoUri = process.env.MONGODB_URI || 'mongodb://localhost:27017/user-management';
+    const uri = process.env.MONGODB_URI!;
+
+    await mongoose.connect(uri);
     
-    await mongoose.connect(mongoUri, {
-      // These options are no longer needed in Mongoose 6+
-      // but keeping for backwards compatibility if needed
-    });
-
-    console.log('MongoDB connected successfully');
-
-    // Handle connection events
+    console.log(`✅ MongoDB connected successfully`);
+    
+    // Run migrations
+    await migrateUsersToIncludeHobbies();
+    
     mongoose.connection.on('error', (error) => {
-      console.error('MongoDB connection error:', error);
+      console.error('❌ MongoDB connection error:', error);
     });
-
+    
     mongoose.connection.on('disconnected', () => {
-      console.log('MongoDB disconnected');
+      console.log('⚠️ MongoDB disconnected');
     });
-
-    // Handle process termination
+    
     process.on('SIGINT', async () => {
       await mongoose.connection.close();
-      console.log('MongoDB connection closed due to application termination');
+      console.log('MongoDB connection closed through app termination');
       process.exit(0);
     });
-
+    
   } catch (error) {
-    console.error('Failed to connect to MongoDB:', error);
+    console.error('❌ Failed to connect to MongoDB:', error);
     process.exit(1);
+  }
+};
+
+export const disconnectDB = async (): Promise<void> => {
+  try {
+    await mongoose.connection.close();
+    console.log('✅ MongoDB disconnected successfully');
+  } catch (error) {
+    console.error('❌ Error disconnecting from MongoDB:', error);
   }
 };

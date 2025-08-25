@@ -32,6 +32,14 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.tasks.await
 import kotlin.math.log
 import com.cpen321.usermanagement.data.model.UpdateHobbiesRequest
+import com.cpen321.usermanagement.data.model.UpdateProfilePictureRequest
+import com.cpen321.usermanagement.data.model.UploadImageResponse
+import com.cpen321.usermanagement.data.api.ApiService
+import okhttp3.MediaType.Companion.toMediaType
+import okhttp3.MultipartBody
+import okhttp3.RequestBody.Companion.asRequestBody
+import java.io.File
+import android.net.Uri
 
 class AuthRepository(private val context: Context) {
     private val TAG = "AuthRepository"
@@ -174,6 +182,62 @@ class AuthRepository(private val context: Context) {
             }
         } catch (e: Exception) {
             Result.failure(Exception("Failed to update user hobbies."))
+        }
+    }
+    
+    suspend fun uploadProfilePicture(imageUri: Uri): Result<User> {
+        return try {
+            val token = tokenManager.getToken().first()
+            if (token == null) {
+                return Result.failure(Exception("No authentication token found"))
+            }
+            
+            // Convert URI to file and create MultipartBody.Part
+            val file = uriToFile(context, imageUri)
+            val requestBody = file.asRequestBody("image/*".toMediaType())
+            val multipartBody = MultipartBody.Part.createFormData("media", file.name, requestBody)
+            
+            // First upload the image
+            val uploadResponse = apiService.uploadImage("Bearer $token", multipartBody)
+            
+            if (uploadResponse.isSuccessful) {
+                val uploadResult = uploadResponse.body()!!.data!!
+                val profilePictureUrl = uploadResult.image
+                val updateRequest = UpdateProfilePictureRequest(profilePictureUrl)
+
+                // Then update the user's profile picture URL
+                val updateResponse = apiService.updateProfilePicture("Bearer $token", updateRequest)
+                
+                if (updateResponse.isSuccessful) {
+                    val profileResponse = updateResponse.body()!!.data!!
+                    Result.success(profileResponse.user)
+                } else {
+                    val errorMessage = updateResponse.body()?.message ?: "Failed to update profile picture."
+                    Result.failure(Exception(errorMessage))
+                }
+            } else {
+                val errorMessage = uploadResponse.body()?.message ?: "Failed to upload image."
+                Result.failure(Exception(errorMessage))
+            }
+        } catch (e: Exception) {
+            Result.failure(Exception("Failed to upload profile picture: ${e.message}"))
+        }
+    }
+    
+    private fun uriToFile(context: Context, uri: Uri): File {
+        return when (uri.scheme) {
+            "file" -> File(uri.path!!)
+            "content" -> {
+                val inputStream = context.contentResolver.openInputStream(uri)
+                val file = File.createTempFile("profile_", ".jpg", context.cacheDir)
+                inputStream?.use { input ->
+                    file.outputStream().use { output ->
+                        input.copyTo(output)
+                    }
+                }
+                file
+            }
+            else -> throw IllegalArgumentException("Unsupported URI scheme: ${uri.scheme}")
         }
     }
 }

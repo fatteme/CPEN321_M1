@@ -9,6 +9,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import android.net.Uri
 
 data class ProfileUiState(
     val isLoading: Boolean = false,
@@ -16,6 +17,7 @@ data class ProfileUiState(
     val availableHobbies: List<String> = emptyList(),
     val selectedHobbies: Set<String> = emptySet(),
     val isSaving: Boolean = false,
+    val isUploadingProfilePicture: Boolean = false,
     val errorMessage: String? = null,
     val successMessage: String? = null
 )
@@ -100,5 +102,39 @@ class ProfileViewModel(context: Context) : ViewModel() {
     
     fun clearSuccessMessage() {
         _uiState.value = _uiState.value.copy(successMessage = null)
+    }
+    
+    fun onEditProfilePictureClick() {
+        // This will be handled by the UI to show image picker
+        // The UI will call this function and then show the dialog
+    }
+    
+    fun uploadProfilePicture(imageUri: Uri) {
+        viewModelScope.launch {
+            _uiState.value = _uiState.value.copy(isUploadingProfilePicture = true, errorMessage = null)
+            
+            try {
+                val result = authRepository.uploadProfilePicture(imageUri)
+                if (result.isSuccess) {
+                    val updatedUser = result.getOrNull()!!
+                    _uiState.value = _uiState.value.copy(
+                        isUploadingProfilePicture = false,
+                        user = updatedUser,
+                        successMessage = "Profile picture updated successfully!"
+                    )
+                } else {
+                    val errorMessage = result.exceptionOrNull()?.message ?: "Failed to upload profile picture"
+                    _uiState.value = _uiState.value.copy(
+                        isUploadingProfilePicture = false,
+                        errorMessage = errorMessage
+                    )
+                }
+            } catch (e: Exception) {
+                _uiState.value = _uiState.value.copy(
+                    isUploadingProfilePicture = false,
+                    errorMessage = e.message ?: "Failed to upload profile picture"
+                )
+            }
+        }
     }
 }

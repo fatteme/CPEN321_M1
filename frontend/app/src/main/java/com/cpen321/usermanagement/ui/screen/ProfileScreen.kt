@@ -1,5 +1,6 @@
 package com.cpen321.usermanagement.ui.screen
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -20,6 +21,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -43,6 +45,9 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -54,6 +59,7 @@ import androidx.compose.ui.res.stringResource
 import coil.compose.AsyncImage
 import com.cpen321.usermanagement.R
 import com.cpen321.usermanagement.ui.viewmodel.ProfileViewModel
+import com.cpen321.usermanagement.ui.components.ImagePicker
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -64,6 +70,7 @@ fun ProfileScreen(
 ) {
     val uiState by profileViewModel.uiState.collectAsState()
     val snackbarHostState = remember { SnackbarHostState() }
+    var showImagePickerDialog by remember { mutableStateOf(false) }
     
     LaunchedEffect(Unit) {
         profileViewModel.loadProfile()
@@ -143,14 +150,37 @@ fun ProfileScreen(
                                     .padding(32.dp),
                                 horizontalAlignment = Alignment.CenterHorizontally
                             ) {
-                                // Profile Picture
-                                AsyncImage(
-                                    model = user.profilePicture,
-                                    contentDescription = "Profile Picture",
-                                    modifier = Modifier
-                                        .size(120.dp)
-                                        .clip(CircleShape)
-                                )
+                                // Profile Picture with Edit Button
+                                Box(
+                                    modifier = Modifier.size(120.dp)
+                                ) {
+                                    AsyncImage(
+                                        model = user.profilePicture,
+                                        contentDescription = "Profile Picture",
+                                        modifier = Modifier
+                                            .fillMaxSize()
+                                            .clip(CircleShape)
+                                    )
+                                    
+                                    // Edit Button Overlay
+                                    IconButton(
+                                        onClick = { showImagePickerDialog = true },
+                                        modifier = Modifier
+                                            .align(Alignment.BottomEnd)
+                                            .size(32.dp)
+                                            .background(
+                                                color = MaterialTheme.colorScheme.primary.copy(alpha = 0.9f),
+                                                shape = CircleShape
+                                            )
+                                    ) {
+                                        Icon(
+                                            imageVector = Icons.Default.Edit,
+                                            contentDescription = "Edit Profile Picture",
+                                            tint = MaterialTheme.colorScheme.onPrimary,
+                                            modifier = Modifier.size(20.dp)
+                                        )
+                                    }
+                                }
                                 
                                 Spacer(modifier = Modifier.height(24.dp))
                                 
@@ -282,5 +312,16 @@ fun ProfileScreen(
                 }
             }
         }
+    }
+    
+    // Image Picker Dialog
+    if (showImagePickerDialog) {
+        ImagePicker(
+            onDismiss = { showImagePickerDialog = false },
+            onImageSelected = { uri ->
+                showImagePickerDialog = false
+                profileViewModel.uploadProfilePicture(uri)
+            }
+        )
     }
 }

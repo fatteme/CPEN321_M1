@@ -1,5 +1,4 @@
 import mongoose from 'mongoose';
-import { migrateUsersToIncludeHobbies } from '../utils/migrate';
 
 export const connectDB = async (): Promise<void> => {
   try {
@@ -8,9 +7,6 @@ export const connectDB = async (): Promise<void> => {
     await mongoose.connect(uri);
     
     console.log(`✅ MongoDB connected successfully`);
-    
-    // Run migrations
-    await migrateUsersToIncludeHobbies();
     
     mongoose.connection.on('error', (error) => {
       console.error('❌ MongoDB connection error:', error);

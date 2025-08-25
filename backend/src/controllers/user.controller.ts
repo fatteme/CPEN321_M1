@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import { userRepository } from '../repositories/user.repository';
+import { MediaService } from '../services/media.service';
 import { UpdateUserHobbiesSchema } from '../types/user.types';
 
 export const getProfile = async (req: Request, res: Response) => {
@@ -13,8 +14,8 @@ export const getProfile = async (req: Request, res: Response) => {
 
 export const updateUserHobbies = async (req: Request<{}, {}, UpdateUserHobbiesSchema>, res: Response) => {
   try {
-    const { hobbies } = req.body;
     const user = req.user!;
+    const { hobbies } = req.body;
 
     const updatedUser = await userRepository.update(user._id, { hobbies });
 
@@ -35,3 +36,16 @@ export const updateUserHobbies = async (req: Request<{}, {}, UpdateUserHobbiesSc
     });
   }
 };
+
+export const updateUserProfilePicture = async (req: Request, res: Response) => {
+  const user = req.user!;
+  const { profilePictureUrl } = req.body;
+
+  await MediaService.deleteImage(user.profilePictureUrl);
+  const updatedUser = await userRepository.update(user._id, { profilePictureUrl });
+
+  res.status(200).json({
+    message: 'User profile picture updated successfully',
+    data: { user: updatedUser }
+  });
+}

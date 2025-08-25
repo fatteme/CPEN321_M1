@@ -31,6 +31,7 @@ import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.tasks.await
 import kotlin.math.log
+import com.cpen321.usermanagement.data.model.UpdateHobbiesRequest
 
 class AuthRepository(private val context: Context) {
     private val TAG = "AuthRepository"
@@ -78,8 +79,7 @@ class AuthRepository(private val context: Context) {
     suspend fun googleLogin(tokenId: String): Result<AuthResponse>{
         val googleLoginReq = GoogleLoginRequest(tokenId)
         val response = apiService.googleLogin(googleLoginReq)
-        Log.d("FATIIIIIIIIIIIIIIIIII", "Response: ${response.body()}")
-        if (response.isSuccessful && response.body()?.success == true) {
+        if (response.isSuccessful) {
             val authResponse = response.body()!!.data!!
             tokenManager.saveToken(authResponse.token)
             return Result.success(response.body()!!.data!!)
@@ -97,12 +97,15 @@ class AuthRepository(private val context: Context) {
             }
             
             val response = apiService.getProfile("Bearer $token")
-            
-            if (response.isSuccessful && response.body()?.success == true) {
+
+            Log.d(TAG, "getProfile response: ${response.isSuccessful}")
+            if (response.isSuccessful) {
+                Log.d(TAG, "getProfile response: ${response.body()}")
                 val profileResponse = response.body()!!.data!!
                 Result.success(profileResponse.user)
             } else {
                 val errorMessage = response.body()?.message ?: "Failed to fetch user information."
+                tokenManager.clearToken()
                 Result.failure(Exception(errorMessage))
             }
         } catch (e: Exception) {
@@ -113,10 +116,11 @@ class AuthRepository(private val context: Context) {
     suspend fun logout(): Result<Unit> {
         return try {
             val token = tokenManager.getToken().first()
-            if (token != null) {
-                apiService.logout("Bearer $token")
+            if (token == null) {
+                return Result.failure(Exception("No authentication token found"))
             }
-            
+
+            apiService.logout("Bearer $token")
             // Clear local token and sign out from Google
             tokenManager.clearToken()
             Result.success(Unit)
@@ -129,5 +133,47 @@ class AuthRepository(private val context: Context) {
     
     suspend fun isLoggedIn(): Boolean {
         return tokenManager.getToken().first() != null
+    }
+    
+    suspend fun getAvailableHobbies(): Result<List<String>> {
+        return try {
+            val token = tokenManager.getToken().first()
+            if (token == null) {
+                return Result.failure(Exception("No authentication token found"))
+            }
+            val response = apiService.getAvailableHobbies("Bearer $token")
+
+            if (response.isSuccessful) {
+                val hobbiesResponse = response.body()!!.data!!
+                Result.success(hobbiesResponse.hobbies)
+            } else {
+                val errorMessage = response.body()?.message ?: "Failed to fetch available hobbies."
+                Result.failure(Exception(errorMessage))
+            }
+        } catch (e: Exception) {
+            Result.failure(Exception("Failed to fetch available hobbies."))
+        }
+    }
+    
+    suspend fun updateUserHobbies(hobbies: List<String>): Result<User> {
+        return try {
+            val token = tokenManager.getToken().first()
+            if (token == null) {
+                return Result.failure(Exception("No authentication token found"))
+            }
+            
+            val request = UpdateHobbiesRequest(hobbies)
+            val response = apiService.updateUserHobbies("Bearer $token", request)
+            
+            if (response.isSuccessful) {
+                val profileResponse = response.body()!!.data!!
+                Result.success(profileResponse.user)
+            } else {
+                val errorMessage = response.body()?.message ?: "Failed to update user hobbies."
+                Result.failure(Exception(errorMessage))
+            }
+        } catch (e: Exception) {
+            Result.failure(Exception("Failed to update user hobbies."))
+        }
     }
 }

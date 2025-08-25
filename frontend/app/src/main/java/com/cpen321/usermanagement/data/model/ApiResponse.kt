@@ -1,7 +1,6 @@
 package com.cpen321.usermanagement.data.model
 
 data class ApiResponse<T>(
-    val success: Boolean,
     val message: String,
     val data: T? = null
 )
@@ -17,4 +16,12 @@ data class ProfileResponse(
 
 data class GoogleLoginRequest(
     val idToken: String
+)
+
+data class HobbiesResponse(
+    val hobbies: List<String>
+)
+
+data class UpdateHobbiesRequest(
+    val hobbies: List<String>
 )

@@ -1,5 +1,4 @@
-import express, { Router } from 'express';
-import path from 'path';
+import { Router } from 'express';
 
 import { authenticateToken } from '../middleware/auth.middleware';
 import authRoutes from './auth.routes';
@@ -8,8 +7,6 @@ import mediaRoutes from './media.routes';
 import usersRoutes from './user.routes';
 
 const router = Router();
-
-router.use('/uploads', express.static(path.join(__dirname, '../uploads')));
 
 router.use('/auth', authRoutes);
 

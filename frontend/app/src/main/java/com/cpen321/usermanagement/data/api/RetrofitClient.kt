@@ -37,7 +37,6 @@ object RetrofitClient {
      * @return The complete URL that can be used to display the image
      */
     fun getImageUrl(imagePath: String): String {
-        Log.d("RetrofitClient", "Constructing image URL for path: $imagePath")
         return if (!imagePath.startsWith("http")) {
             IMAGE_BASE_URL + imagePath
         } else {

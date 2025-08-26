@@ -3,6 +3,7 @@ package com.cpen321.usermanagement.data.repository
 import android.content.Context
 import androidx.credentials.*
 import androidx.credentials.exceptions.GetCredentialException
+import com.cpen321.usermanagement.config.AppConfig
 import com.cpen321.usermanagement.data.api.RetrofitClient
 import com.cpen321.usermanagement.data.model.*
 import com.cpen321.usermanagement.data.storage.TokenManager
@@ -14,7 +15,7 @@ class AuthRepository(context: Context) {
     private val tokenManager = TokenManager(context)
     private val credentialManager = CredentialManager.create(context)
     val signInWithGoogleOption: GetSignInWithGoogleOption = GetSignInWithGoogleOption.Builder(
-        serverClientId = "482701217775-3maplltka0g713ntauacrc6ueopbgbm5.apps.googleusercontent.com"
+        serverClientId = AppConfig.GOOGLE_CLIENT_ID
     ).build()
 
     suspend fun signInWithGoogle(context: Context): Result<GoogleIdTokenCredential> {

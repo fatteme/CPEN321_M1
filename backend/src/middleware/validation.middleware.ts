@@ -15,14 +15,14 @@ export const validateBody = <T>(schema: z.ZodSchema<T>): RequestHandler => {
           message: 'Invalid input data',
           details: error.issues.map((issue: any) => ({
             field: issue.path.join('.'),
-            message: issue.message
-          }))
+            message: issue.message,
+          })),
         });
       }
-      
+
       return res.status(500).json({
         error: 'Internal server error',
-        message: 'Validation processing failed'
+        message: 'Validation processing failed',
       });
     }
   };
@@ -42,14 +42,14 @@ export const validateQuery = <T>(schema: z.ZodSchema<T>) => {
           message: 'Invalid query parameters',
           details: error.issues.map((issue: any) => ({
             field: issue.path.join('.'),
-            message: issue.message
-          }))
+            message: issue.message,
+          })),
         });
       }
-      
+
       return res.status(500).json({
         error: 'Internal server error',
-        message: 'Query validation processing failed'
+        message: 'Query validation processing failed',
       });
     }
   };
@@ -69,14 +69,14 @@ export const validateParams = <T>(schema: z.ZodSchema<T>) => {
           message: 'Invalid URL parameters',
           details: error.issues.map((issue: any) => ({
             field: issue.path.join('.'),
-            message: issue.message
-          }))
+            message: issue.message,
+          })),
         });
       }
-      
+
       return res.status(500).json({
         error: 'Internal server error',
-        message: 'Parameter validation processing failed'
+        message: 'Parameter validation processing failed',
       });
     }
   };

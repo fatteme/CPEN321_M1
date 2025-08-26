@@ -19,4 +19,4 @@ export const HOBBIES = [
   'Skiing',
 ];
 
-export type Hobby = typeof HOBBIES[number];
+export type Hobby = (typeof HOBBIES)[number];

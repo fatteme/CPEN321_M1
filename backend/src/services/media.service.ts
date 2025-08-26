@@ -10,7 +10,7 @@ export class MediaService {
       const newPath = path.join(IMAGES_DIR, fileName);
 
       fs.renameSync(filePath, newPath);
-      
+
       return newPath;
     } catch (error) {
       if (fs.existsSync(filePath)) {

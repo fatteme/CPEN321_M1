@@ -17,7 +17,7 @@ export class AuthService {
     try {
       const ticket = await this.googleClient.verifyIdToken({
         idToken,
-        audience: process.env.GOOGLE_CLIENT_ID
+        audience: process.env.GOOGLE_CLIENT_ID,
       });
 
       const payload = ticket.getPayload();
@@ -45,7 +45,6 @@ export class AuthService {
     return jwt.sign(JSON.stringify(user), process.env.JWT_SECRET!);
   }
 
-
   async authenticateWithGoogle(idToken: string): Promise<AuthResult> {
     try {
       const googleUserInfo = await this.verifyGoogleToken(idToken);
@@ -64,4 +63,4 @@ export class AuthService {
   }
 }
 
-export const authService = new AuthService(); 
+export const authService = new AuthService();

@@ -8,19 +8,14 @@ export const notFoundHandler = (req: Request, res: Response) => {
     message: `Cannot ${req.method} ${req.originalUrl}`,
     timestamp: new Date().toISOString(),
     path: req.originalUrl,
-    method: req.method
+    method: req.method,
   });
 };
 
-
-export const errorHandler = (
-  error: Error,
-  req: Request,
-  res: Response,
-) => {
+export const errorHandler = (error: Error, req: Request, res: Response) => {
   logger.error('Error:', error);
 
   return res.status(500).json({
-    message: 'Internal server error'
+    message: 'Internal server error',
   });
 };

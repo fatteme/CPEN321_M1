@@ -1,7 +1,7 @@
-import { RequestHandler } from "express";
+import { RequestHandler } from 'express';
 
-import { authService } from "../services/auth.service";
-import logger from "../utils/logger";
+import { authService } from '../services/auth.service';
+import logger from '../utils/logger';
 
 export const authenticateUser: RequestHandler = async (req, res, next) => {
   try {
@@ -13,20 +13,19 @@ export const authenticateUser: RequestHandler = async (req, res, next) => {
       message: 'Authentication successful',
       data,
     });
-
   } catch (error) {
     logger.error('Google authentication error:', error);
-    
+
     if (error instanceof Error) {
       if (error.message === 'Invalid Google token') {
         return res.status(401).json({
-          message: 'Invalid Google token'
+          message: 'Invalid Google token',
         });
       }
-      
+
       if (error.message === 'Failed to process user') {
         return res.status(500).json({
-          message: 'Failed to process user information'
+          message: 'Failed to process user information',
         });
       }
     }
@@ -35,4 +34,3 @@ export const authenticateUser: RequestHandler = async (req, res, next) => {
     next(error);
   }
 };
-

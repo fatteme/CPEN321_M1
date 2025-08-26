@@ -10,7 +10,7 @@ const logger = {
   },
   debug: (message: string, ...args: any[]) => {
     console.debug(`[DEBUG] ${message}`, ...args);
-  }
-}; 
+  },
+};
 
 export default logger;

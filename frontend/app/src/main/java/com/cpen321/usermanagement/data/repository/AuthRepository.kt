@@ -202,8 +202,8 @@ class AuthRepository(private val context: Context) {
             
             if (uploadResponse.isSuccessful) {
                 val uploadResult = uploadResponse.body()!!.data!!
-                val profilePictureUrl = uploadResult.image
-                val updateRequest = UpdateProfilePictureRequest(profilePictureUrl)
+                val profilePicture = uploadResult.image
+                val updateRequest = UpdateProfilePictureRequest(profilePicture)
 
                 // Then update the user's profile picture URL
                 val updateResponse = apiService.updateProfilePicture("Bearer $token", updateRequest)

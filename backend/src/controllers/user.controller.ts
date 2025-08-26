@@ -40,14 +40,13 @@ export const updateUserHobbies = async (req: Request<{}, {}, UpdateUserHobbiesSc
 export const updateUserProfilePicture = async (req: Request<{}, {}, UpdateUserProfilePictureSchema>, res: Response) => {
   try {
     const user = req.user!;
-    const { profilePictureUrl } = req.body;
+    const { profilePicture } = req.body;
 
-    // Delete old profile picture if it exists
-    if (user.profilePictureUrl) {
-      await MediaService.deleteImage(user.profilePictureUrl);
+    if (user.profilePicture) {
+      await MediaService.deleteImage(user.profilePicture);
     }
 
-    const updatedUser = await userRepository.update(user._id, { profilePictureUrl });
+    const updatedUser = await userRepository.update(user._id, { profilePicture });
 
     if (!updatedUser) {
       return res.status(404).json({
@@ -71,12 +70,11 @@ export const deleteUserProfilePicture = async (req: Request, res: Response) => {
   try {
     const user = req.user!;
 
-    // Delete old profile picture if it exists
-    if (user.profilePictureUrl) {
-      await MediaService.deleteImage(user.profilePictureUrl);
+    if (user.profilePicture) {
+      await MediaService.deleteImage(user.profilePicture);
     }
 
-    const updatedUser = await userRepository.update(user._id, { profilePictureUrl: undefined });
+    const updatedUser = await userRepository.update(user._id, { profilePicture: undefined });
 
     if (!updatedUser) {
       return res.status(404).json({

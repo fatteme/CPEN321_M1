@@ -22,7 +22,7 @@ const userSchema = new Schema<IUser>({
     required: true,
     trim: true
   },
-  profilePictureUrl: {
+  profilePicture: {
     type: String,
     required: false,
     trim: true

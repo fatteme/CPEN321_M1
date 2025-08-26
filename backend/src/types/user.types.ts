@@ -7,7 +7,7 @@ export interface IUser extends Document {
   googleId: string;
   email: string;
   name: string;
-  profilePictureUrl?: string;
+  profilePicture?: string;
   hobbies: Hobby[];
   createdAt: Date;
   updatedAt: Date;
@@ -17,24 +17,24 @@ export type GoogleUserInfo = {
   googleId: string;
   email: string;
   name: string;
-  profilePictureUrl?: string;
+  profilePicture?: string;
 }
 
 export const userSchema = z.object({
   email: z.string().email(),
   name: z.string().min(1),
   googleId: z.string().min(1),
-  profilePictureUrl: z.string().optional(),
+  profilePicture: z.string().optional(),
   hobbies: z.array(z.string()).default([]),
 });
 
 // Create user
-export type CreateUserSchema = z.infer<typeof userSchema>['email' | 'name'| 'googleId'| 'profilePictureUrl'];
-export type UpdateUserSchema = z.infer<typeof userSchema>['email' | 'name'| 'googleId'| 'profilePictureUrl'];
+export type CreateUserSchema = z.infer<typeof userSchema>['email' | 'name'| 'googleId'| 'profilePicture'];
+export type UpdateUserSchema = z.infer<typeof userSchema>['email' | 'name'| 'googleId'| 'profilePicture'];
 
 // Update user profile picture
 export const updateUserProfilePictureSchema = z.object({
-  profilePictureUrl: z.string().min(1)
+  profilePicture: z.string().min(1)
 });
 
 export type UpdateUserProfilePictureSchema = z.infer<typeof updateUserProfilePictureSchema>;

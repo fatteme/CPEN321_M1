@@ -1,10 +1,10 @@
+import mongoose from 'mongoose';
 import { z } from 'zod';
 
 import { User } from '../models/user.model';
 import type { GoogleUserInfo, IUser } from '../types/user.types';
 import { userSchema } from '../types/user.types';
 import logger from '../utils/logger';
-import mongoose from 'mongoose';
 
 export class UserRepository {
 
@@ -22,7 +22,7 @@ export class UserRepository {
             throw new Error('Failed to find user');
         }
     }
-    
+
     async findByGoogleId(googleId: string): Promise<IUser | null> {
         try {
             const user = await User.findOne({ googleId });
@@ -61,7 +61,7 @@ export class UserRepository {
 
     async update(userId: mongoose.Types.ObjectId, user: Partial<IUser>): Promise<IUser | null> {
         try {
-            const updatedUser = await User.findByIdAndUpdate(userId, user);
+            const updatedUser = await User.findByIdAndUpdate(userId, user, { new: true });
             return updatedUser;
         } catch (error) {
             logger.error('Error updating user:', error);
@@ -74,11 +74,11 @@ export class UserRepository {
             logger.info('Finding or creating user:', googleUserInfo);
 
             let user = await this.findByGoogleId(googleUserInfo.googleId);
-            
+
             if (user) {
                 return user;
             }
-            
+
             return await this.create(googleUserInfo);
         } catch (error) {
             logger.error('Error in findOrCreateUser:', error);

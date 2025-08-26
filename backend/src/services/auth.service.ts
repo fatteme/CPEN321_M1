@@ -33,7 +33,7 @@ export class AuthService {
         googleId: payload.sub,
         email: payload.email,
         name: payload.name,
-        profilePictureUrl: payload.picture,
+        profilePicture: payload.picture,
       };
     } catch (error) {
       logger.error('Google token verification failed:', error);

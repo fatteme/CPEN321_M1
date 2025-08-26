@@ -5,9 +5,11 @@ import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.util.concurrent.TimeUnit
+import android.util.Log
 
 object RetrofitClient {
     private const val BASE_URL = "http://10.0.2.2:3000/api/"  // For Android emulator
+    private const val IMAGE_BASE_URL = "http://10.0.2.2:3000/"
     // Use http://YOUR_LOCAL_IP:3000/api/ for real device testing
     
     private val loggingInterceptor = HttpLoggingInterceptor().apply {
@@ -35,10 +37,11 @@ object RetrofitClient {
      * @return The complete URL that can be used to display the image
      */
     fun getImageUrl(imagePath: String): String {
-        return if (imagePath.startsWith("/")) {
+        Log.d("RetrofitClient", "Constructing image URL for path: $imagePath")
+        return if (!imagePath.startsWith("http")) {
             IMAGE_BASE_URL + imagePath
         } else {
-            IMAGE_BASE_URL + "/" + imagePath
+            imagePath
         }
     }
 }

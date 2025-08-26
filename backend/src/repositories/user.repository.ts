@@ -75,7 +75,7 @@ export class UserRepository {
 
   async findOrCreateUser(googleUserInfo: GoogleUserInfo): Promise<IUser> {
     try {
-      let user = await this.findByGoogleId(googleUserInfo.googleId);
+      const user = await this.findByGoogleId(googleUserInfo.googleId);
 
       if (user) {
         return user;

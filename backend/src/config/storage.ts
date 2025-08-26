@@ -1,6 +1,7 @@
+import { Request } from 'express';
+import fs from 'fs';
 import multer from 'multer';
 import path from 'path';
-import fs from 'fs';
 
 import { IMAGES_DIR } from '../constants';
 
@@ -19,7 +20,7 @@ const storage = multer.diskStorage({
 });
 
 const fileFilter = (
-  req: Express.Request,
+  req: Request,
   file: Express.Multer.File,
   cb: multer.FileFilterCallback
 ) => {

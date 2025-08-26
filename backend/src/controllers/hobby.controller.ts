@@ -3,7 +3,11 @@ import { NextFunction, Request, Response } from 'express';
 import { HOBBIES } from '../constants';
 import logger from '../utils/logger';
 
-export const getAllHobbies = async (req: Request, res: Response, next: NextFunction) => {
+export const getAllHobbies = (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   try {
     res.status(200).json({
       message: 'All hobbies fetched successfully',

@@ -3,7 +3,11 @@ import { NextFunction, Request, Response } from 'express';
 import { MediaService } from '../services/media.service';
 import logger from '../utils/logger';
 
-export const uploadImage = async (req: Request, res: Response, next: NextFunction) => {
+export const uploadImage = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   try {
     if (!req.file) {
       return res.status(400).json({
@@ -12,7 +16,10 @@ export const uploadImage = async (req: Request, res: Response, next: NextFunctio
     }
 
     const user = req.user!;
-    const image = await MediaService.saveImage(req.file.path, user._id.toString());
+    const image = await MediaService.saveImage(
+      req.file.path,
+      user._id.toString()
+    );
 
     res.status(200).json({
       message: 'Image uploaded successfully',

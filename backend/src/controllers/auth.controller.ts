@@ -5,7 +5,11 @@ import logger from '../utils/logger';
 import { AuthenticateUserRequest } from '../types/auth.types';
 
 // TODO: add classes
-export const authenticateUser = async (req: Request<{}, {}, AuthenticateUserRequest>, res: Response, next: NextFunction) => {
+export const authenticateUser = async (
+  req: Request<{}, {}, AuthenticateUserRequest>,
+  res: Response,
+  next: NextFunction
+) => {
   try {
     const { idToken } = req.body;
 

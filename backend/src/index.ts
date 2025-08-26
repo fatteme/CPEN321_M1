@@ -19,12 +19,10 @@ app.use('*', notFoundHandler);
 app.use(errorHandler);
 
 connectDB();
-// TODO: add better logs
 app.listen(PORT, () => {
   console.log(`🚀 Server running on port ${PORT}`);
 });
 
 
-// TODO: add eslint
 // TODO: what storage does?
 // Define all types for APIs

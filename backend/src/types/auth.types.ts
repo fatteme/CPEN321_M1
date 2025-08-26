@@ -9,7 +9,8 @@ export const authenticateUserSchema = z.object({
 });
 
 // Request types
-export type AuthenticateUserRequest = z.infer<typeof authenticateUserSchema> & Request;
+export type AuthenticateUserRequest = z.infer<typeof authenticateUserSchema> &
+  Request;
 
 // Response types
 export interface AuthenticateUserResponse {

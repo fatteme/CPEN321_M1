@@ -8,7 +8,7 @@ import {
 } from '../types/user.types';
 import logger from '../utils/logger';
 
-export const getProfile = async (req: Request, res: Response, next: NextFunction) => {
+export const getProfile = (req: Request, res: Response) => {
   const { user } = req;
 
   res.status(200).json({

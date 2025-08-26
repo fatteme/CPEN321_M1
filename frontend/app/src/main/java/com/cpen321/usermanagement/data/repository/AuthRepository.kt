@@ -1,27 +1,18 @@
 package com.cpen321.usermanagement.data.repository
 
 import android.content.Context
-import androidx.credentials.GetCredentialRequest
+import android.net.Uri
+import androidx.credentials.*
 import androidx.credentials.exceptions.GetCredentialException
 import com.cpen321.usermanagement.data.api.RetrofitClient
-import com.cpen321.usermanagement.data.model.AuthResponse
-import com.cpen321.usermanagement.data.model.GoogleLoginRequest
-import com.cpen321.usermanagement.data.model.User
+import com.cpen321.usermanagement.data.model.*
 import com.cpen321.usermanagement.data.storage.TokenManager
-import androidx.credentials.CredentialManager
-import androidx.credentials.CustomCredential
-import androidx.credentials.GetCredentialResponse
-import com.google.android.libraries.identity.googleid.GetSignInWithGoogleOption
-import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
-import com.google.android.libraries.identity.googleid.GoogleIdTokenParsingException
+import com.google.android.libraries.identity.googleid.*
 import kotlinx.coroutines.flow.first
-import com.cpen321.usermanagement.data.model.UpdateHobbiesRequest
-import com.cpen321.usermanagement.data.model.UpdateProfilePictureRequest
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.asRequestBody
 import java.io.File
-import android.net.Uri
 
 class AuthRepository(private val context: Context) {
     private val apiService = RetrofitClient.apiService
@@ -65,27 +56,29 @@ class AuthRepository(private val context: Context) {
         }
     }
 
-    suspend fun googleLogin(tokenId: String): Result<AuthResponse>{
+    suspend fun googleLogin(tokenId: String): Result<AuthData> {
         val googleLoginReq = GoogleLoginRequest(tokenId)
-        val response = apiService.googleLogin(googleLoginReq)
-        if (response.isSuccessful) {
-            val authResponse = response.body()!!.data!!
-            tokenManager.saveToken(authResponse.token)
-            RetrofitClient.setAuthToken(authResponse.token)  // Set token in RetrofitClient
-            return Result.success(response.body()!!.data!!)
-        } else {
-            val errorMessage = response.body()?.message ?: "Failed to login with Google."
-            throw Exception(errorMessage)
+        return try {
+            val response = apiService.googleLogin(googleLoginReq)
+            if (response.isSuccessful && response.body()?.data != null) {
+                val authData = response.body()!!.data!!
+                tokenManager.saveToken(authData.token)
+                RetrofitClient.setAuthToken(authData.token)
+                Result.success(authData)
+            } else {
+                val errorMessage = response.body()?.message ?: "Failed to login with Google."
+                Result.failure(Exception(errorMessage))
+            }
+        } catch (e: Exception) {
+            Result.failure(e)
         }
     }
 
     suspend fun getProfile(): Result<User> {
         return try {
             val response = apiService.getProfile()
-
-            if (response.isSuccessful) {
-                val profileResponse = response.body()!!.data!!
-                Result.success(profileResponse.user)
+            if (response.isSuccessful && response.body()?.data != null) {
+                Result.success(response.body()!!.data!!.user)
             } else {
                 val errorMessage = response.body()?.message ?: "Failed to fetch user information."
                 tokenManager.clearToken()
@@ -93,7 +86,7 @@ class AuthRepository(private val context: Context) {
                 Result.failure(Exception(errorMessage))
             }
         } catch (e: Exception) {
-            Result.failure(Exception("Failed to fetch user information."))
+            Result.failure(e)
         }
     }
     
@@ -110,33 +103,28 @@ class AuthRepository(private val context: Context) {
     suspend fun getAvailableHobbies(): Result<List<String>> {
         return try {
             val response = apiService.getAvailableHobbies()
-
-            if (response.isSuccessful) {
-                val hobbiesResponse = response.body()!!.data!!
-                Result.success(hobbiesResponse.hobbies)
+            if (response.isSuccessful && response.body()?.data != null) {
+                Result.success(response.body()!!.data!!.hobbies)
             } else {
-                val errorMessage = response.body()?.message ?: "Failed to fetch available hobbies."
+                val errorMessage = response.body()?.message ?: "Failed to fetch hobbies."
                 Result.failure(Exception(errorMessage))
             }
         } catch (e: Exception) {
-            Result.failure(Exception("Failed to fetch available hobbies."))
+            Result.failure(e)
         }
     }
-    
+
     suspend fun updateUserHobbies(hobbies: List<String>): Result<User> {
         return try {
-            val request = UpdateHobbiesRequest(hobbies)
-            val response = apiService.updateUserHobbies(request)
-
-            if (response.isSuccessful) {
-                val profileResponse = response.body()!!.data!!
-                Result.success(profileResponse.user)
+            val response = apiService.updateUserHobbies(UpdateHobbiesRequest(hobbies))
+            if (response.isSuccessful && response.body()?.data != null) {
+                Result.success(response.body()!!.data!!.user)
             } else {
-                val errorMessage = response.body()?.message ?: "Failed to update user hobbies."
+                val errorMessage = response.body()?.message ?: "Failed to update hobbies."
                 Result.failure(Exception(errorMessage))
             }
         } catch (e: Exception) {
-            Result.failure(Exception("Failed to update user hobbies."))
+            Result.failure(e)
         }
     }
     
@@ -150,17 +138,16 @@ class AuthRepository(private val context: Context) {
             // First upload the image
             val uploadResponse = apiService.uploadImage(multipartBody)
 
-            if (uploadResponse.isSuccessful) {
-                val uploadResult = uploadResponse.body()!!.data!!
-                val profilePicture = uploadResult.image
+            if (uploadResponse.isSuccessful && uploadResponse.body()?.data != null) {
+                val uploadData = uploadResponse.body()!!.data!!
+                val profilePicture = uploadData.url  // Using the new UploadImageData's url property
                 val updateRequest = UpdateProfilePictureRequest(profilePicture)
 
                 // Then update the user's profile picture URL
                 val updateResponse = apiService.updateProfilePicture(updateRequest)
 
-                if (updateResponse.isSuccessful) {
-                    val profileResponse = updateResponse.body()!!.data!!
-                    Result.success(profileResponse.user)
+                if (updateResponse.isSuccessful && updateResponse.body()?.data != null) {
+                    Result.success(updateResponse.body()!!.data!!.user)
                 } else {
                     val errorMessage = updateResponse.body()?.message ?: "Failed to update profile picture."
                     Result.failure(Exception(errorMessage))

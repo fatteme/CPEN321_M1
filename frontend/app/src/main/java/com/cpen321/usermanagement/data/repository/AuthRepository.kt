@@ -1,40 +1,22 @@
 package com.cpen321.usermanagement.data.repository
 
 import android.content.Context
-import android.content.Intent
-import android.util.JsonToken
-import android.util.Log
-import androidx.credentials.Credential
 import androidx.credentials.GetCredentialRequest
 import androidx.credentials.exceptions.GetCredentialException
 import com.cpen321.usermanagement.data.api.RetrofitClient
-import com.cpen321.usermanagement.data.model.ApiResponse
 import com.cpen321.usermanagement.data.model.AuthResponse
 import com.cpen321.usermanagement.data.model.GoogleLoginRequest
-import com.cpen321.usermanagement.data.model.ProfileResponse
 import com.cpen321.usermanagement.data.model.User
 import com.cpen321.usermanagement.data.storage.TokenManager
-import com.google.android.gms.auth.api.signin.GoogleSignIn
-import com.google.android.gms.auth.api.signin.GoogleSignInAccount
-import com.google.android.gms.auth.api.signin.GoogleSignInClient
-import com.google.android.gms.auth.api.signin.GoogleSignInOptions
-import com.google.android.libraries.identity.googleid.GetGoogleIdOption
 import androidx.credentials.CredentialManager
 import androidx.credentials.CustomCredential
 import androidx.credentials.GetCredentialResponse
-import androidx.credentials.PasswordCredential
-import androidx.credentials.PublicKeyCredential
 import com.google.android.libraries.identity.googleid.GetSignInWithGoogleOption
 import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
 import com.google.android.libraries.identity.googleid.GoogleIdTokenParsingException
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.tasks.await
-import kotlin.math.log
 import com.cpen321.usermanagement.data.model.UpdateHobbiesRequest
 import com.cpen321.usermanagement.data.model.UpdateProfilePictureRequest
-import com.cpen321.usermanagement.data.model.UploadImageResponse
-import com.cpen321.usermanagement.data.api.ApiService
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.asRequestBody
@@ -42,7 +24,6 @@ import java.io.File
 import android.net.Uri
 
 class AuthRepository(private val context: Context) {
-    private val TAG = "AuthRepository"
     private val apiService = RetrofitClient.apiService
     private val tokenManager = TokenManager(context)
     private val credentialManager = CredentialManager.create(context)
@@ -90,6 +71,7 @@ class AuthRepository(private val context: Context) {
         if (response.isSuccessful) {
             val authResponse = response.body()!!.data!!
             tokenManager.saveToken(authResponse.token)
+            RetrofitClient.setAuthToken(authResponse.token)  // Set token in RetrofitClient
             return Result.success(response.body()!!.data!!)
         } else {
             val errorMessage = response.body()?.message ?: "Failed to login with Google."
@@ -99,21 +81,15 @@ class AuthRepository(private val context: Context) {
 
     suspend fun getProfile(): Result<User> {
         return try {
-            val token = tokenManager.getToken().first()
-            if (token == null) {
-                return Result.failure(Exception("No authentication token found"))
-            }
-            
-            val response = apiService.getProfile("Bearer $token")
+            val response = apiService.getProfile()
 
-            Log.d(TAG, "getProfile response: ${response.isSuccessful}")
             if (response.isSuccessful) {
-                Log.d(TAG, "getProfile response: ${response.body()}")
                 val profileResponse = response.body()!!.data!!
                 Result.success(profileResponse.user)
             } else {
                 val errorMessage = response.body()?.message ?: "Failed to fetch user information."
                 tokenManager.clearToken()
+                RetrofitClient.setAuthToken(null)
                 Result.failure(Exception(errorMessage))
             }
         } catch (e: Exception) {
@@ -122,21 +98,9 @@ class AuthRepository(private val context: Context) {
     }
     
     suspend fun logout(): Result<Unit> {
-        return try {
-            val token = tokenManager.getToken().first()
-            if (token == null) {
-                return Result.failure(Exception("No authentication token found"))
-            }
-
-            apiService.logout("Bearer $token")
-            // Clear local token and sign out from Google
-            tokenManager.clearToken()
-            Result.success(Unit)
-        } catch (e: Exception) {
-            // Even if backend call fails, we should clear local state
-            tokenManager.clearToken()
-            Result.success(Unit)
-        }
+        tokenManager.clearToken()
+        RetrofitClient.setAuthToken(null)
+        return Result.success(Unit)
     }
     
     suspend fun isLoggedIn(): Boolean {
@@ -145,11 +109,7 @@ class AuthRepository(private val context: Context) {
     
     suspend fun getAvailableHobbies(): Result<List<String>> {
         return try {
-            val token = tokenManager.getToken().first()
-            if (token == null) {
-                return Result.failure(Exception("No authentication token found"))
-            }
-            val response = apiService.getAvailableHobbies("Bearer $token")
+            val response = apiService.getAvailableHobbies()
 
             if (response.isSuccessful) {
                 val hobbiesResponse = response.body()!!.data!!
@@ -165,14 +125,9 @@ class AuthRepository(private val context: Context) {
     
     suspend fun updateUserHobbies(hobbies: List<String>): Result<User> {
         return try {
-            val token = tokenManager.getToken().first()
-            if (token == null) {
-                return Result.failure(Exception("No authentication token found"))
-            }
-            
             val request = UpdateHobbiesRequest(hobbies)
-            val response = apiService.updateUserHobbies("Bearer $token", request)
-            
+            val response = apiService.updateUserHobbies(request)
+
             if (response.isSuccessful) {
                 val profileResponse = response.body()!!.data!!
                 Result.success(profileResponse.user)
@@ -187,27 +142,22 @@ class AuthRepository(private val context: Context) {
     
     suspend fun uploadProfilePicture(imageUri: Uri): Result<User> {
         return try {
-            val token = tokenManager.getToken().first()
-            if (token == null) {
-                return Result.failure(Exception("No authentication token found"))
-            }
-            
             // Convert URI to file and create MultipartBody.Part
             val file = uriToFile(context, imageUri)
             val requestBody = file.asRequestBody("image/*".toMediaType())
             val multipartBody = MultipartBody.Part.createFormData("media", file.name, requestBody)
             
             // First upload the image
-            val uploadResponse = apiService.uploadImage("Bearer $token", multipartBody)
-            
+            val uploadResponse = apiService.uploadImage(multipartBody)
+
             if (uploadResponse.isSuccessful) {
                 val uploadResult = uploadResponse.body()!!.data!!
                 val profilePicture = uploadResult.image
                 val updateRequest = UpdateProfilePictureRequest(profilePicture)
 
                 // Then update the user's profile picture URL
-                val updateResponse = apiService.updateProfilePicture("Bearer $token", updateRequest)
-                
+                val updateResponse = apiService.updateProfilePicture(updateRequest)
+
                 if (updateResponse.isSuccessful) {
                     val profileResponse = updateResponse.body()!!.data!!
                     Result.success(profileResponse.user)

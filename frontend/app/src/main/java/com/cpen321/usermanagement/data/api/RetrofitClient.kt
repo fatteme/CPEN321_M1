@@ -5,18 +5,21 @@ import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.util.concurrent.TimeUnit
-import android.util.Log
 
 object RetrofitClient {
-    private const val BASE_URL = "http://10.0.2.2:3000/api/"  // For Android emulator
+    private const val BASE_URL = "http://10.0.2.2:3000/api/"
     private const val IMAGE_BASE_URL = "http://10.0.2.2:3000/"
-    // Use http://YOUR_LOCAL_IP:3000/api/ for real device testing
-    
+
+    private var authToken: String? = null
+
     private val loggingInterceptor = HttpLoggingInterceptor().apply {
         level = HttpLoggingInterceptor.Level.BODY
     }
     
+    private val authInterceptor = AuthInterceptor { authToken }
+
     private val httpClient = OkHttpClient.Builder()
+        .addInterceptor(authInterceptor)
         .addInterceptor(loggingInterceptor)
         .connectTimeout(30, TimeUnit.SECONDS)
         .readTimeout(30, TimeUnit.SECONDS)
@@ -31,6 +34,14 @@ object RetrofitClient {
     
     val apiService: ApiService = retrofit.create(ApiService::class.java)
     
+    /**
+     * Sets the authentication token to be used for API requests
+     * @param token The authentication token
+     */
+    fun setAuthToken(token: String?) {
+        authToken = token
+    }
+
     /**
      * Constructs the full URL for an image by combining the image base URL with the image path
      * @param imagePath The image path returned from the backend (e.g., /uploads/profile-pictures/filename.jpg)

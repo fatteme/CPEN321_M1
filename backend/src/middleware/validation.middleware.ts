@@ -1,19 +1,19 @@
 import { Request, Response, NextFunction, RequestHandler } from 'express';
-import { z } from 'zod';
+import { z, ZodError } from 'zod';
 
 export const validateBody = <T>(schema: z.ZodSchema<T>): RequestHandler => {
   return (req: Request, res: Response, next: NextFunction) => {
     try {
       const validatedData = schema.parse(req.body);
 
-      (req as any).body = validatedData;
+      req.body = validatedData;
       next();
-    } catch (error: any) {
-      if (error?.issues) {
+    } catch (error) {
+      if (error instanceof ZodError) {
         return res.status(400).json({
           error: 'Validation error',
           message: 'Invalid input data',
-          details: error.issues.map((issue: any) => ({
+          details: error.issues.map(issue => ({
             field: issue.path.join('.'),
             message: issue.message,
           })),

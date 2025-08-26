@@ -2,7 +2,10 @@ import dotenv from 'dotenv';
 import express from 'express';
 
 import { connectDB } from './config/database';
-import { errorHandler, notFoundHandler } from './middleware/errorHandler.middleware';
+import {
+  errorHandler,
+  notFoundHandler,
+} from './middleware/errorHandler.middleware';
 import router from './routes';
 import path from 'path';
 
@@ -23,6 +26,6 @@ app.listen(PORT, () => {
   console.log(`🚀 Server running on port ${PORT}`);
 });
 
-
 // TODO: what storage does?
 // Define all types for APIs
+// TODO: add classes for controllers

@@ -3,13 +3,17 @@ import { NextFunction, Request, Response } from 'express';
 import { userRepository } from '../repositories/user.repository';
 import { MediaService } from '../services/media.service';
 import {
-  UpdateUserHobbiesSchema,
-  UpdateUserProfilePictureSchema,
+  GetProfileResponse,
+  UpdateUserHobbiesRequest,
+  UpdateUserProfilePictureRequest,
 } from '../types/user.types';
 import logger from '../utils/logger';
 
-export const getProfile = (req: Request, res: Response) => {
-  const { user } = req;
+export const getProfile = (
+  req: Request<{}, {}, {}>,
+  res: Response<GetProfileResponse>
+) => {
+  const user = req.user!;
 
   res.status(200).json({
     message: 'Profile fetched successfully',
@@ -18,8 +22,8 @@ export const getProfile = (req: Request, res: Response) => {
 };
 
 export const updateUserHobbies = async (
-  req: Request<{}, {}, UpdateUserHobbiesSchema>,
-  res: Response,
+  req: Request<{}, {}, UpdateUserHobbiesRequest>,
+  res: Response<GetProfileResponse>,
   next: NextFunction
 ) => {
   try {
@@ -43,8 +47,7 @@ export const updateUserHobbies = async (
 
     if (error instanceof Error) {
       return res.status(500).json({
-        message: 'Failed to update user hobbies',
-        error: error.message,
+        message: error.message || 'Failed to update user hobbies',
       });
     }
 
@@ -53,8 +56,8 @@ export const updateUserHobbies = async (
 };
 
 export const updateUserProfilePicture = async (
-  req: Request<{}, {}, UpdateUserProfilePictureSchema>,
-  res: Response,
+  req: Request<{}, {}, UpdateUserProfilePictureRequest>,
+  res: Response<GetProfileResponse>,
   next: NextFunction
 ) => {
   try {
@@ -84,8 +87,7 @@ export const updateUserProfilePicture = async (
 
     if (error instanceof Error) {
       return res.status(500).json({
-        message: 'Failed to update user profile picture',
-        error: error.message,
+        message: error.message || 'Failed to update user profile picture',
       });
     }
 
@@ -95,7 +97,7 @@ export const updateUserProfilePicture = async (
 
 export const deleteUserProfilePicture = async (
   req: Request,
-  res: Response,
+  res: Response<GetProfileResponse>,
   next: NextFunction
 ) => {
   try {
@@ -124,8 +126,7 @@ export const deleteUserProfilePicture = async (
 
     if (error instanceof Error) {
       return res.status(500).json({
-        message: 'Failed to delete user profile picture',
-        error: error.message,
+        message: error.message || 'Failed to delete user profile picture',
       });
     }
 

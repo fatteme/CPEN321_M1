@@ -1,5 +1,4 @@
 import { z } from 'zod';
-import { Request } from 'express';
 
 import { IUser } from './user.types';
 
@@ -9,20 +8,19 @@ export const authenticateUserSchema = z.object({
 });
 
 // Request types
-export type AuthenticateUserRequest = z.infer<typeof authenticateUserSchema> &
-  Request;
+export type AuthenticateUserRequest = z.infer<typeof authenticateUserSchema>;
 
 // Response types
-export interface AuthenticateUserResponse {
+export type AuthenticateUserResponse = {
   message: string;
   data?: AuthResult;
-}
+};
 
 // Generic types
-export interface AuthResult {
+export type AuthResult = {
   token: string;
   user: IUser;
-}
+};
 
 declare global {
   namespace Express {

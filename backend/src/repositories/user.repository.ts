@@ -50,7 +50,7 @@ export class UserRepository {
       return user;
     } catch (error) {
       if (error instanceof z.ZodError) {
-        console.error('Validation error:', (error as any).errors);
+        console.error('Validation error:', error.issues);
         throw new Error('Invalid update data');
       }
       console.error('Error updating user:', error);
@@ -63,7 +63,9 @@ export class UserRepository {
     user: Partial<IUser>
   ): Promise<IUser | null> {
     try {
-      const updatedUser = await User.findByIdAndUpdate(userId, user, {
+      const validatedData = userSchema.parse(user);
+
+      const updatedUser = await User.findByIdAndUpdate(userId, validatedData, {
         new: true,
       });
       return updatedUser;

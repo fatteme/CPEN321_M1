@@ -2,6 +2,7 @@ import mongoose, { Document } from 'mongoose';
 import z from 'zod';
 import { HOBBIES } from '../constants';
 
+// User model
 export interface IUser extends Document {
   _id: mongoose.Types.ObjectId;
   googleId: string;
@@ -13,13 +14,7 @@ export interface IUser extends Document {
   updatedAt: Date;
 }
 
-export type GoogleUserInfo = {
-  googleId: string;
-  email: string;
-  name: string;
-  profilePicture?: string;
-};
-
+// User schema
 export const userSchema = z.object({
   email: z.string().email(),
   name: z.string().min(1),
@@ -28,29 +23,10 @@ export const userSchema = z.object({
   hobbies: z.array(z.string()).default([]),
 });
 
-// Create user
-export type CreateUserSchema = z.infer<typeof userSchema>[
-  | 'email'
-  | 'name'
-  | 'googleId'
-  | 'profilePicture'];
-
-export type UpdateUserSchema = z.infer<typeof userSchema>[
-  | 'email'
-  | 'name'
-  | 'googleId'
-  | 'profilePicture'];
-
-// Update user profile picture
 export const updateUserProfilePictureSchema = z.object({
   profilePicture: z.string().min(1),
 });
 
-export type UpdateUserProfilePictureSchema = z.infer<
-  typeof updateUserProfilePictureSchema
->;
-
-// Update user hobbies
 export const updateUserHobbiesSchema = z.object({
   hobbies: z
     .array(z.string())
@@ -60,4 +36,23 @@ export const updateUserHobbiesSchema = z.object({
     }),
 });
 
-export type UpdateUserHobbiesSchema = z.infer<typeof updateUserHobbiesSchema>;
+// Types
+export type GoogleUserInfo = {
+  googleId: string;
+  email: string;
+  name: string;
+  profilePicture?: string;
+};
+
+export type GetProfileResponse = {
+  message: string;
+  data?: {
+    user: IUser;
+  };
+};
+
+export type UpdateUserHobbiesRequest = z.infer<typeof updateUserHobbiesSchema>;
+
+export type UpdateUserProfilePictureRequest = z.infer<
+  typeof updateUserProfilePictureSchema
+>;

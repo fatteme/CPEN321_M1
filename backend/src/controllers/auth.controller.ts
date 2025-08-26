@@ -2,12 +2,14 @@ import { Request, Response, NextFunction } from 'express';
 
 import { authService } from '../services/auth.service';
 import logger from '../utils/logger';
-import { AuthenticateUserRequest } from '../types/auth.types';
+import {
+  AuthenticateUserRequest,
+  AuthenticateUserResponse,
+} from '../types/auth.types';
 
-// TODO: add classes
 export const authenticateUser = async (
   req: Request<{}, {}, AuthenticateUserRequest>,
-  res: Response,
+  res: Response<AuthenticateUserResponse>,
   next: NextFunction
 ) => {
   try {

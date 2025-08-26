@@ -2,10 +2,11 @@ import { NextFunction, Request, Response } from 'express';
 
 import { HOBBIES } from '../constants';
 import logger from '../utils/logger';
+import { GetAllHobbiesResponse } from '../types/hobby.types';
 
 export const getAllHobbies = (
   req: Request,
-  res: Response,
+  res: Response<GetAllHobbiesResponse>,
   next: NextFunction
 ) => {
   try {
@@ -18,8 +19,7 @@ export const getAllHobbies = (
 
     if (error instanceof Error) {
       return res.status(500).json({
-        message: 'Failed to fetch available hobbies',
-        error: error.message,
+        message: error.message || 'Failed to fetch available hobbies',
       });
     }
 

@@ -2,10 +2,11 @@ import { NextFunction, Request, Response } from 'express';
 
 import { MediaService } from '../services/media.service';
 import logger from '../utils/logger';
+import { UploadImageRequest, UploadImageResponse } from '../types/media.types';
 
 export const uploadImage = async (
-  req: Request,
-  res: Response,
+  req: Request<{}, {}, UploadImageRequest>,
+  res: Response<UploadImageResponse>,
   next: NextFunction
 ) => {
   try {
@@ -32,8 +33,7 @@ export const uploadImage = async (
 
     if (error instanceof Error) {
       return res.status(500).json({
-        message: 'Failed to upload profile picture',
-        error: error.message,
+        message: error.message || 'Failed to upload profile picture',
       });
     }
 

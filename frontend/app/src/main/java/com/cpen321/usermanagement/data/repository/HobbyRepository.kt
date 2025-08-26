@@ -2,7 +2,6 @@ package com.cpen321.usermanagement.data.repository
 
 import android.content.Context
 import com.cpen321.usermanagement.data.api.RetrofitClient
-import com.cpen321.usermanagement.data.model.*
 
 class HobbyRepository(context: Context) {
     private val apiService = RetrofitClient.hobbyService

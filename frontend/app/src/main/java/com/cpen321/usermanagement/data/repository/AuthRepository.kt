@@ -9,7 +9,7 @@ import com.cpen321.usermanagement.data.storage.TokenManager
 import com.google.android.libraries.identity.googleid.*
 import kotlinx.coroutines.flow.first
 
-class AuthRepository(private val context: Context) {
+class AuthRepository(context: Context) {
     private val apiService = RetrofitClient.authService
     private val tokenManager = TokenManager(context)
     private val credentialManager = CredentialManager.create(context)

@@ -30,6 +30,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -47,7 +48,7 @@ fun AuthScreen(
 ) {
     val context = LocalContext.current
     val uiState by authViewModel.uiState.collectAsState()
-    val snackbarHostState = remember { SnackbarHostState() }
+    val snackBarHostState = remember { SnackbarHostState() }
     
     LaunchedEffect(uiState.isAuthenticated) {
         if (uiState.isAuthenticated) {
@@ -57,7 +58,7 @@ fun AuthScreen(
     
     LaunchedEffect(uiState.errorMessage) {
         uiState.errorMessage?.let { message ->
-            snackbarHostState.showSnackbar(message)
+            snackBarHostState.showSnackbar(message)
             authViewModel.clearError()
         }
     }
@@ -72,7 +73,7 @@ fun AuthScreen(
         ) {
             // App Logo/Title
             Text(
-                text = "User Management",
+                text = stringResource(R.string.app_name),
                 style = MaterialTheme.typography.headlineLarge,
                 fontWeight = FontWeight.Bold,
                 textAlign = TextAlign.Center,
@@ -82,7 +83,7 @@ fun AuthScreen(
             Spacer(modifier = Modifier.height(16.dp))
             
             Text(
-                text = "Welcome! Please sign in to continue.",
+                text = stringResource(R.string.welcome_message),
                 style = MaterialTheme.typography.bodyLarge,
                 textAlign = TextAlign.Center,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
@@ -122,12 +123,12 @@ fun AuthScreen(
                 } else {
                     Image(
                         painter = painterResource(id = R.drawable.ic_google),
-                        contentDescription = "Google Logo",
+                        contentDescription = stringResource(R.string.google_logo),
                         modifier = Modifier.size(24.dp)
                     )
                     Spacer(modifier = Modifier.size(8.dp))
                     Text(
-                        text = "Sign in with Google",
+                        text = stringResource(R.string.sign_in_with_google),
                         fontSize = 16.sp,
                         fontWeight = FontWeight.Medium
                     )
@@ -136,7 +137,7 @@ fun AuthScreen(
         }
         
         SnackbarHost(
-            hostState = snackbarHostState,
+            hostState = snackBarHostState,
             modifier = Modifier.align(Alignment.BottomCenter)
         )
     }

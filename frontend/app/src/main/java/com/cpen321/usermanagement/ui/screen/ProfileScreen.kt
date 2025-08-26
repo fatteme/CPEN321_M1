@@ -4,7 +4,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -46,20 +45,18 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.res.stringResource
 import coil.compose.AsyncImage
 import com.cpen321.usermanagement.R
-import com.cpen321.usermanagement.ui.viewmodel.ProfileViewModel
 import com.cpen321.usermanagement.ui.components.ImagePicker
+import com.cpen321.usermanagement.ui.viewmodel.ProfileViewModel
 import com.cpen321.usermanagement.data.api.RetrofitClient
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -70,7 +67,7 @@ fun ProfileScreen(
     onSignOut: () -> Unit
 ) {
     val uiState by profileViewModel.uiState.collectAsState()
-    val snackbarHostState = remember { SnackbarHostState() }
+    val snackBarHostState = remember { SnackbarHostState() }
     var showImagePickerDialog by remember { mutableStateOf(false) }
     
     LaunchedEffect(Unit) {
@@ -79,14 +76,14 @@ fun ProfileScreen(
     
     LaunchedEffect(uiState.errorMessage) {
         uiState.errorMessage?.let { message ->
-            snackbarHostState.showSnackbar(message)
+            snackBarHostState.showSnackbar(message)
             profileViewModel.clearError()
         }
     }
     
     LaunchedEffect(uiState.successMessage) {
         uiState.successMessage?.let { message ->
-            snackbarHostState.showSnackbar(message)
+            snackBarHostState.showSnackbar(message)
             profileViewModel.clearSuccessMessage()
         }
     }
@@ -96,7 +93,7 @@ fun ProfileScreen(
             TopAppBar(
                 title = {
                     Text(
-                        text = "Profile",
+                        text = stringResource(R.string.profile),
                         style = MaterialTheme.typography.titleLarge,
                         fontWeight = FontWeight.Medium
                     )
@@ -105,7 +102,7 @@ fun ProfileScreen(
                     IconButton(onClick = onBackClick) {
                         Icon(
                             imageVector = Icons.Default.ArrowBack,
-                            contentDescription = "Back",
+                            contentDescription = stringResource(R.string.back),
                             tint = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
@@ -116,7 +113,7 @@ fun ProfileScreen(
                 )
             )
         },
-        snackbarHost = { SnackbarHost(hostState = snackbarHostState) }
+        snackbarHost = { SnackbarHost(hostState = snackBarHostState) }
     ) { paddingValues ->
         Box(
             modifier = Modifier
@@ -157,7 +154,7 @@ fun ProfileScreen(
                                 ) {
                                     AsyncImage(
                                         model = RetrofitClient.getImageUrl(user.profilePicture),
-                                        contentDescription = "Profile Picture",
+                                        contentDescription = stringResource(R.string.profile_picture),
                                         modifier = Modifier
                                             .fillMaxSize()
                                             .clip(CircleShape)
@@ -176,7 +173,7 @@ fun ProfileScreen(
                                     ) {
                                         Icon(
                                             imageVector = Icons.Default.Edit,
-                                            contentDescription = "Edit Profile Picture",
+                                            contentDescription = stringResource(R.string.edit_profile_picture),
                                             tint = MaterialTheme.colorScheme.onPrimary,
                                             modifier = Modifier.size(20.dp)
                                         )
@@ -250,7 +247,7 @@ fun ProfileScreen(
                                                 {
                                                     Icon(
                                                         imageVector = Icons.Default.Check,
-                                                        contentDescription = "Selected",
+                                                        contentDescription = stringResource(R.string.selected_chip),
                                                         modifier = Modifier.size(FilterChipDefaults.IconSize)
                                                     )
                                                 }
@@ -304,7 +301,7 @@ fun ProfileScreen(
                             )
                         ) {
                             Text(
-                                text = "Sign Out",
+                                text = stringResource(R.string.sign_out),
                                 style = MaterialTheme.typography.labelLarge,
                                 fontWeight = FontWeight.Medium
                             )

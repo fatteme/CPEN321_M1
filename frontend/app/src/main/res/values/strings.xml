@@ -4,8 +4,17 @@
     <string name="hobbies">Hobbies</string>
     <string name="select_hobbies">Select your hobbies:</string>
     <string name="save_hobbies">Save Hobbies</string>
-    <string name="saving">Saving...</string>
+    <string name="saving">Saving…</string>
     <string name="hobbies_updated">Hobbies updated successfully!</string>
     <string name="failed_update_hobbies">Failed to update hobbies</string>
     <string name="failed_load_hobbies">Failed to load hobbies</string>
+    <string name="profile">Profile</string>
+    <string name="back">Back</string>
+    <string name="profile_picture">Profile Picture</string>
+    <string name="edit_profile_picture">Edit Profile Picture</string>
+    <string name="sign_out">Sign Out</string>
+    <string name="selected_chip">Selected</string>
+    <string name="welcome_message">Welcome! Please sign in to continue.</string>
+    <string name="google_logo">Google Logo</string>
+    <string name="sign_in_with_google">Sign in with Google</string>
 </resources>

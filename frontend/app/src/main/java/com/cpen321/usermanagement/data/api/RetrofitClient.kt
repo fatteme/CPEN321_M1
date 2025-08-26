@@ -31,8 +31,11 @@ object RetrofitClient {
         .client(httpClient)
         .addConverterFactory(GsonConverterFactory.create())
         .build()
-    
-    val apiService: ApiService = retrofit.create(ApiService::class.java)
+
+    val authService: AuthService = retrofit.create(AuthService::class.java)
+    val userService: UserService = retrofit.create(UserService::class.java)
+    val hobbyService: HobbyService = retrofit.create(HobbyService::class.java)
+    val mediaService: MediaService = retrofit.create(MediaService::class.java)
 
     fun setAuthToken(token: String?) {
         authToken = token

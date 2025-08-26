@@ -1,13 +1,10 @@
 package com.cpen321.usermanagement.ui.viewmodel
 
 import android.content.Context
-import android.util.Log
-import androidx.credentials.GetCredentialResponse
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.cpen321.usermanagement.data.model.User
 import com.cpen321.usermanagement.data.repository.AuthRepository
-import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

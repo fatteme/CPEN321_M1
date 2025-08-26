@@ -4,12 +4,13 @@ import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.cpen321.usermanagement.data.model.User
-import com.cpen321.usermanagement.data.repository.AuthRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import android.net.Uri
+import com.cpen321.usermanagement.data.repository.HobbyRepository
+import com.cpen321.usermanagement.data.repository.UserRepository
 
 data class ProfileUiState(
     val isLoading: Boolean = false,
@@ -23,7 +24,8 @@ data class ProfileUiState(
 )
 
 class ProfileViewModel(context: Context) : ViewModel() {
-    private val authRepository = AuthRepository(context)
+    private val userProfileRepository = UserRepository(context)
+    private val hobbyRepository = HobbyRepository(context)
     
     private val _uiState = MutableStateFlow(ProfileUiState())
     val uiState: StateFlow<ProfileUiState> = _uiState.asStateFlow()
@@ -32,9 +34,8 @@ class ProfileViewModel(context: Context) : ViewModel() {
         viewModelScope.launch {
             _uiState.value = _uiState.value.copy(isLoading = true, errorMessage = null)
             
-            // Load profile and available hobbies in parallel
-            val profileResult = authRepository.getProfile()
-            val hobbiesResult = authRepository.getAvailableHobbies()
+            val profileResult = userProfileRepository.getProfile()
+            val hobbiesResult = hobbyRepository.getAvailableHobbies()
             
             if (profileResult.isSuccess && hobbiesResult.isSuccess) {
                 val user = profileResult.getOrNull()!!
@@ -77,7 +78,7 @@ class ProfileViewModel(context: Context) : ViewModel() {
             _uiState.value = _uiState.value.copy(isSaving = true, errorMessage = null, successMessage = null)
             
             val selectedHobbiesList = _uiState.value.selectedHobbies.toList()
-            val result = authRepository.updateUserHobbies(selectedHobbiesList)
+            val result = userProfileRepository.updateUserHobbies(selectedHobbiesList)
             
             if (result.isSuccess) {
                 val updatedUser = result.getOrNull()!!
@@ -104,17 +105,12 @@ class ProfileViewModel(context: Context) : ViewModel() {
         _uiState.value = _uiState.value.copy(successMessage = null)
     }
     
-    fun onEditProfilePictureClick() {
-        // This will be handled by the UI to show image picker
-        // The UI will call this function and then show the dialog
-    }
-    
     fun uploadProfilePicture(imageUri: Uri) {
         viewModelScope.launch {
             _uiState.value = _uiState.value.copy(isUploadingProfilePicture = true, errorMessage = null)
             
             try {
-                val result = authRepository.uploadProfilePicture(imageUri)
+                val result = userProfileRepository.uploadProfilePicture(imageUri)
                 if (result.isSuccess) {
                     val updatedUser = result.getOrNull()!!
                     _uiState.value = _uiState.value.copy(

@@ -1,10 +1,7 @@
 package com.cpen321.usermanagement.ui.screen
 
-import android.app.Activity
 import android.util.Log
 import androidx.activity.ComponentActivity
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -20,7 +17,6 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Snackbar
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
@@ -41,8 +37,6 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.lifecycleScope
 import com.cpen321.usermanagement.R
 import com.cpen321.usermanagement.ui.viewmodel.AuthViewModel
-import com.google.android.gms.auth.api.signin.GoogleSignIn
-import com.google.android.gms.common.api.ApiException
 import kotlinx.coroutines.launch
 
 
@@ -102,11 +96,9 @@ fun AuthScreen(
                     (context as? ComponentActivity)?.lifecycleScope?.launch {
                         val result = authViewModel.signInWithGoogle(context)
                         result.onSuccess { credential ->
-                            // Handle successful sign-in
                             authViewModel.handleGoogleSignInResult(credential)
                             Log.d("SignIn", "Signed in: ${credential.id}")
                         }.onFailure { e ->
-                            // Handle failure
                             Log.e("SignIn", "Sign-in failed", e)
                         }
                     }

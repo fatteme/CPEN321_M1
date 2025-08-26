@@ -29,29 +29,24 @@ fun ImagePicker(
     var hasCameraPermission by remember { mutableStateOf(false) }
     var hasStoragePermission by remember { mutableStateOf(false) }
     
-    // Store the photo URI for camera capture
     var photoUri by remember { mutableStateOf<Uri?>(null) }
     
-    // Camera permission launcher
     val cameraPermissionLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestPermission()
     ) { isGranted ->
         hasCameraPermission = isGranted
     }
     
-    // Storage permission launcher
     val storagePermissionLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestPermission()
     ) { isGranted ->
         hasStoragePermission = isGranted
     }
     
-    // Camera launcher
     val cameraLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.TakePicture()
     ) { success ->
         if (success) {
-            // The image was captured successfully, call onImageSelected with the photo URI
             photoUri?.let { uri ->
                 onImageSelected(uri)
                 onDismiss()
@@ -59,7 +54,6 @@ fun ImagePicker(
         }
     }
     
-    // Gallery launcher
     val galleryLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()
     ) { uri ->
@@ -67,7 +61,6 @@ fun ImagePicker(
         onDismiss()
     }
     
-    // Check permissions on first launch
     LaunchedEffect(Unit) {
         hasCameraPermission = ContextCompat.checkSelfPermission(
             context,
@@ -109,7 +102,6 @@ fun ImagePicker(
                 Button(
                     onClick = {
                         if (hasCameraPermission) {
-                            // Create a temporary file for the photo
                             val photoFile = File.createTempFile(
                                 "profile_photo_${System.currentTimeMillis()}",
                                 ".jpg",

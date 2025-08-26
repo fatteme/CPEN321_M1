@@ -1,9 +1,10 @@
 import { Router } from 'express';
 
-import { getAllHobbies } from '../controllers/hobby.controller';
+import { HobbyController } from '../controllers/hobby.controller';
 
 const router = Router();
+const hobbyController = new HobbyController();
 
-router.get('/', getAllHobbies);
+router.get('/', hobbyController.getAllHobbies);
 
 export default router;

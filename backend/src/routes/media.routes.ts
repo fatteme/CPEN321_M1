@@ -2,10 +2,16 @@ import { Router } from 'express';
 
 import { upload } from '../config/storage';
 import { authenticateToken } from '../middleware/auth.middleware';
-import { uploadImage } from '../controllers/media.controller';
+import { MediaController } from '../controllers/media.controller';
 
 const router = Router();
+const mediaController = new MediaController();
 
-router.post('/upload', authenticateToken, upload.single('media'), uploadImage);
+router.post(
+  '/upload',
+  authenticateToken,
+  upload.single('media'),
+  mediaController.uploadImage
+);
 
 export default router;

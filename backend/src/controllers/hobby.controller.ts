@@ -4,25 +4,27 @@ import { HOBBIES } from '../constants';
 import logger from '../utils/logger';
 import { GetAllHobbiesResponse } from '../types/hobby.types';
 
-export const getAllHobbies = (
-  req: Request,
-  res: Response<GetAllHobbiesResponse>,
-  next: NextFunction
-) => {
-  try {
-    res.status(200).json({
-      message: 'All hobbies fetched successfully',
-      data: { hobbies: HOBBIES },
-    });
-  } catch (error) {
-    logger.error('Failed to fetch available hobbies:', error);
-
-    if (error instanceof Error) {
-      return res.status(500).json({
-        message: error.message || 'Failed to fetch available hobbies',
+export class HobbyController {
+  getAllHobbies(
+    req: Request,
+    res: Response<GetAllHobbiesResponse>,
+    next: NextFunction
+  ) {
+    try {
+      res.status(200).json({
+        message: 'All hobbies fetched successfully',
+        data: { hobbies: HOBBIES },
       });
-    }
+    } catch (error) {
+      logger.error('Failed to fetch available hobbies:', error);
 
-    next(error);
+      if (error instanceof Error) {
+        return res.status(500).json({
+          message: error.message || 'Failed to fetch available hobbies',
+        });
+      }
+
+      next(error);
+    }
   }
-};
+}

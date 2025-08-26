@@ -27,5 +27,3 @@ app.listen(PORT, () => {
 });
 
 // TODO: what storage does?
-// Define all types for APIs
-// TODO: add classes for controllers

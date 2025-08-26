@@ -1,33 +1,29 @@
 import { Router } from 'express';
 
-import {
-  deleteUserProfilePicture,
-  getProfile,
-  updateUserHobbies,
-  updateUserProfilePicture,
-} from '../controllers/user.controller';
 import { validateBody } from '../middleware/validation.middleware';
 import {
   updateUserHobbiesSchema,
   updateUserProfilePictureSchema,
 } from '../types/user.types';
+import { UserController } from '../controllers/user.controller';
 
 const router = Router();
+const userController = new UserController();
 
-router.get('/profile', getProfile);
+router.get('/profile', userController.getProfile);
 
 router.post(
   '/hobbies',
   validateBody(updateUserHobbiesSchema),
-  updateUserHobbies
+  userController.updateUserHobbies
 );
 
 router.post(
   '/profile-picture',
   validateBody(updateUserProfilePictureSchema),
-  updateUserProfilePicture
+  userController.updateUserProfilePicture
 );
 
-router.delete('/profile-picture', deleteUserProfilePicture);
+router.delete('/profile-picture', userController.deleteUserProfilePicture);
 
 export default router;

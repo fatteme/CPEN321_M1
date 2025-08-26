@@ -3,6 +3,7 @@ import z from 'zod';
 import { HOBBIES } from '../constants';
 
 // User model
+// ------------------------------------------------------------
 export interface IUser extends Document {
   _id: mongoose.Types.ObjectId;
   googleId: string;
@@ -14,7 +15,8 @@ export interface IUser extends Document {
   updatedAt: Date;
 }
 
-// User schema
+// Zod schemas
+// ------------------------------------------------------------
 export const userSchema = z.object({
   email: z.string().email(),
   name: z.string().min(1),
@@ -36,14 +38,8 @@ export const updateUserHobbiesSchema = z.object({
     }),
 });
 
-// Types
-export type GoogleUserInfo = {
-  googleId: string;
-  email: string;
-  name: string;
-  profilePicture?: string;
-};
-
+// Request types
+// ------------------------------------------------------------
 export type GetProfileResponse = {
   message: string;
   data?: {
@@ -56,3 +52,12 @@ export type UpdateUserHobbiesRequest = z.infer<typeof updateUserHobbiesSchema>;
 export type UpdateUserProfilePictureRequest = z.infer<
   typeof updateUserProfilePictureSchema
 >;
+
+// Generic types
+// ------------------------------------------------------------
+export type GoogleUserInfo = {
+  googleId: string;
+  email: string;
+  name: string;
+  profilePicture?: string;
+};

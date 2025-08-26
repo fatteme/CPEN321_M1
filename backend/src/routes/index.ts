@@ -1,4 +1,5 @@
-import { Router } from 'express';
+import express, { Router } from 'express';
+import path from 'path';
 
 import { authenticateToken } from '../middleware/auth.middleware';
 import authRoutes from './auth.routes';
@@ -8,12 +9,14 @@ import usersRoutes from './user.routes';
 
 const router = Router();
 
+router.use('/uploads', express.static(path.join(__dirname, '../uploads')));
+
 router.use('/auth', authRoutes);
 
 router.use('/hobbies', authenticateToken, hobbiesRoutes);
 
 router.use('/user', authenticateToken, usersRoutes);
 
-router.use('/media', mediaRoutes);
+router.use('/media', authenticateToken, mediaRoutes);
 
 export default router;

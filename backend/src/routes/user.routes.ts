@@ -15,16 +15,19 @@ import {
 const router = Router();
 
 router.get('/profile', getProfile);
+
 router.post(
   '/hobbies',
   validateBody(updateUserHobbiesSchema),
   updateUserHobbies
 );
+
 router.post(
   '/profile-picture',
   validateBody(updateUserProfilePictureSchema),
   updateUserProfilePicture
 );
+
 router.delete('/profile-picture', deleteUserProfilePicture);
 
 export default router;

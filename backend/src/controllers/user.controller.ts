@@ -1,12 +1,14 @@
-import { Request, Response } from 'express';
+import { NextFunction, Request, Response } from 'express';
+
 import { userRepository } from '../repositories/user.repository';
 import { MediaService } from '../services/media.service';
 import {
   UpdateUserHobbiesSchema,
   UpdateUserProfilePictureSchema,
 } from '../types/user.types';
+import logger from '../utils/logger';
 
-export const getProfile = async (req: Request, res: Response) => {
+export const getProfile = async (req: Request, res: Response, next: NextFunction) => {
   const { user } = req;
 
   res.status(200).json({
@@ -17,7 +19,8 @@ export const getProfile = async (req: Request, res: Response) => {
 
 export const updateUserHobbies = async (
   req: Request<{}, {}, UpdateUserHobbiesSchema>,
-  res: Response
+  res: Response,
+  next: NextFunction
 ) => {
   try {
     const user = req.user!;
@@ -36,16 +39,23 @@ export const updateUserHobbies = async (
       data: { user: updatedUser },
     });
   } catch (error) {
-    res.status(500).json({
-      message: 'Failed to update user hobbies',
-      error: error instanceof Error ? error.message : 'Unknown error',
-    });
+    logger.error('Failed to update user hobbies:', error);
+
+    if (error instanceof Error) {
+      return res.status(500).json({
+        message: 'Failed to update user hobbies',
+        error: error.message,
+      });
+    }
+
+    next(error);
   }
 };
 
 export const updateUserProfilePicture = async (
   req: Request<{}, {}, UpdateUserProfilePictureSchema>,
-  res: Response
+  res: Response,
+  next: NextFunction
 ) => {
   try {
     const user = req.user!;
@@ -70,14 +80,24 @@ export const updateUserProfilePicture = async (
       data: { user: updatedUser },
     });
   } catch (error) {
-    res.status(500).json({
-      message: 'Failed to update user profile picture',
-      error: error instanceof Error ? error.message : 'Unknown error',
-    });
+    logger.error('Failed to update user profile picture:', error);
+
+    if (error instanceof Error) {
+      return res.status(500).json({
+        message: 'Failed to update user profile picture',
+        error: error.message,
+      });
+    }
+
+    next(error);
   }
 };
 
-export const deleteUserProfilePicture = async (req: Request, res: Response) => {
+export const deleteUserProfilePicture = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   try {
     const user = req.user!;
 
@@ -100,9 +120,15 @@ export const deleteUserProfilePicture = async (req: Request, res: Response) => {
       data: { user: updatedUser },
     });
   } catch (error) {
-    res.status(500).json({
-      message: 'Failed to delete user profile picture',
-      error: error instanceof Error ? error.message : 'Unknown error',
-    });
+    logger.error('Failed to delete user profile picture:', error);
+
+    if (error instanceof Error) {
+      return res.status(500).json({
+        message: 'Failed to delete user profile picture',
+        error: error.message,
+      });
+    }
+
+    next(error);
   }
 };

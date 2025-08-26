@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { Request } from 'express';
 
 import { IUser } from './user.types';
 
@@ -8,7 +9,7 @@ export const authenticateUserSchema = z.object({
 });
 
 // Request types
-export type AuthenticateUserRequest = z.infer<typeof authenticateUserSchema>;
+export type AuthenticateUserRequest = z.infer<typeof authenticateUserSchema> & Request;
 
 // Response types
 export interface AuthenticateUserResponse {

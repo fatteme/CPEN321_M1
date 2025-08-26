@@ -1,6 +1,6 @@
 import mongoose, { Document } from 'mongoose';
 import z from 'zod';
-import { HOBBIES, Hobby } from '../constants/hobbies';
+import { HOBBIES } from '../constants';
 
 export interface IUser extends Document {
   _id: mongoose.Types.ObjectId;
@@ -8,7 +8,7 @@ export interface IUser extends Document {
   email: string;
   name: string;
   profilePicture?: string;
-  hobbies: Hobby[];
+  hobbies: string[];
   createdAt: Date;
   updatedAt: Date;
 }
@@ -34,6 +34,7 @@ export type CreateUserSchema = z.infer<typeof userSchema>[
   | 'name'
   | 'googleId'
   | 'profilePicture'];
+
 export type UpdateUserSchema = z.infer<typeof userSchema>[
   | 'email'
   | 'name'

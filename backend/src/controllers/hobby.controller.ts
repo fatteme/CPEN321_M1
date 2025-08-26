@@ -1,17 +1,24 @@
-import { Request, Response } from 'express';
+import { NextFunction, Request, Response } from 'express';
 
-import { HOBBIES } from '../constants/hobbies';
+import { HOBBIES } from '../constants';
+import logger from '../utils/logger';
 
-export const getAllHobbies = async (req: Request, res: Response) => {
+export const getAllHobbies = async (req: Request, res: Response, next: NextFunction) => {
   try {
     res.status(200).json({
       message: 'All hobbies fetched successfully',
       data: { hobbies: HOBBIES },
     });
   } catch (error) {
-    res.status(500).json({
-      message: 'Failed to fetch available hobbies',
-      error: error instanceof Error ? error.message : 'Unknown error',
-    });
+    logger.error('Failed to fetch available hobbies:', error);
+
+    if (error instanceof Error) {
+      return res.status(500).json({
+        message: 'Failed to fetch available hobbies',
+        error: error.message,
+      });
+    }
+
+    next(error);
   }
 };

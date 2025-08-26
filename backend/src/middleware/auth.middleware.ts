@@ -3,7 +3,6 @@ import jwt from 'jsonwebtoken';
 
 import { userRepository } from '../repositories/user.repository';
 import { IUser } from '../types/user.types';
-import logger from '../utils/logger';
 
 export const authenticateToken: RequestHandler = async (
   req: Request,
@@ -12,9 +11,7 @@ export const authenticateToken: RequestHandler = async (
 ) => {
   try {
     const authHeader = req.headers.authorization;
-    logger.info('Auth header:', authHeader);
     const token = authHeader && authHeader.split(' ')[1];
-    logger.info('Token:', token);
 
     if (!token) {
       res.status(401).json({
@@ -25,7 +22,6 @@ export const authenticateToken: RequestHandler = async (
     }
 
     const decoded = jwt.verify(token, process.env.JWT_SECRET!) as IUser;
-    logger.info('Decoded token:', decoded);
 
     if (!decoded || !decoded._id) {
       res.status(401).json({
@@ -65,11 +61,6 @@ export const authenticateToken: RequestHandler = async (
       return;
     }
 
-    console.error('Auth middleware error:', error);
-    res.status(500).json({
-      error: 'Authentication error',
-      message: 'Internal server error during authentication',
-    });
-    return;
+    next(error);
   }
 };

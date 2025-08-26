@@ -1,9 +1,11 @@
-import { RequestHandler } from 'express';
+import { Request, Response, NextFunction } from 'express';
 
 import { authService } from '../services/auth.service';
 import logger from '../utils/logger';
+import { AuthenticateUserRequest } from '../types/auth.types';
 
-export const authenticateUser: RequestHandler = async (req, res, next) => {
+// TODO: add classes
+export const authenticateUser = async (req: Request<{}, {}, AuthenticateUserRequest>, res: Response, next: NextFunction) => {
   try {
     const { idToken } = req.body;
 
@@ -30,7 +32,6 @@ export const authenticateUser: RequestHandler = async (req, res, next) => {
       }
     }
 
-    // Let the global error handler deal with unknown errors
     next(error);
   }
 };

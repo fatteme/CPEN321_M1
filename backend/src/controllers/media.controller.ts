@@ -1,38 +1,35 @@
-import { Request, Response } from 'express';
-import { MediaService } from '../services/media.service';
+import { NextFunction, Request, Response } from 'express';
 
-export const uploadImage = async (req: Request, res: Response) => {
+import { MediaService } from '../services/media.service';
+import logger from '../utils/logger';
+
+export const uploadImage = async (req: Request, res: Response, next: NextFunction) => {
   try {
     if (!req.file) {
       return res.status(400).json({
-        success: false,
         message: 'No file uploaded',
       });
     }
 
-    const userId = (req as any).user?._id;
-    if (!userId) {
-      return res.status(401).json({
-        success: false,
-        message: 'User not authenticated',
-      });
-    }
-
-    const image = await MediaService.saveImage(req.file.path, userId);
+    const user = req.user!;
+    const image = await MediaService.saveImage(req.file.path, user._id.toString());
 
     res.status(200).json({
-      success: true,
       message: 'Image uploaded successfully',
       data: {
         image,
       },
     });
   } catch (error) {
-    console.error('Error uploading profile picture:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Failed to upload profile picture',
-      error: error instanceof Error ? error.message : 'Unknown error',
-    });
+    logger.error('Error uploading profile picture:', error);
+
+    if (error instanceof Error) {
+      return res.status(500).json({
+        message: 'Failed to upload profile picture',
+        error: error.message,
+      });
+    }
+
+    next(error);
   }
 };

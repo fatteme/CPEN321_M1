@@ -1,7 +1,7 @@
 import mongoose, { Schema } from 'mongoose';
 
 import type { IUser } from '../types/user.types';
-import { HOBBIES } from '../constants/hobbies';
+import { HOBBIES } from '../constants';
 
 const userSchema = new Schema<IUser>(
   {

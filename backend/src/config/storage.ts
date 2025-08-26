@@ -2,7 +2,7 @@ import multer from 'multer';
 import path from 'path';
 import fs from 'fs';
 
-import { IMAGES_DIR } from '../constants/media';
+import { IMAGES_DIR } from '../constants';
 
 if (!fs.existsSync(IMAGES_DIR)) {
   fs.mkdirSync(IMAGES_DIR, { recursive: true });
@@ -14,7 +14,7 @@ const storage = multer.diskStorage({
   },
   filename: (req, file, cb) => {
     const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
-    cb(null, `image-${uniqueSuffix}${path.extname(file.originalname)}`);
+    cb(null, `${uniqueSuffix}${path.extname(file.originalname)}`);
   },
 });
 

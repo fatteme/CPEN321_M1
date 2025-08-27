@@ -51,8 +51,6 @@ export class AuthService {
 
       const user = await this.findOrCreateUser(googleUserInfo);
 
-      logger.info('User authenticated:', user);
-
       const token = this.generateAccessToken(user);
 
       return { token, user };

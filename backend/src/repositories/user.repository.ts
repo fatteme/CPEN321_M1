@@ -63,7 +63,7 @@ export class UserRepository {
     user: Partial<IUser>
   ): Promise<IUser | null> {
     try {
-      const validatedData = userSchema.parse(user);
+      const validatedData = userSchema.partial().parse(user);
 
       const updatedUser = await User.findByIdAndUpdate(userId, validatedData, {
         new: true,

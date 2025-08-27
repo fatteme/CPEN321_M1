@@ -1,5 +1,6 @@
 package com.cpen321.usermanagement.data.api
 
+import com.cpen321.usermanagement.config.AppConfig
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
@@ -7,8 +8,8 @@ import retrofit2.converter.gson.GsonConverterFactory
 import java.util.concurrent.TimeUnit
 
 object RetrofitClient {
-    private const val BASE_URL = "http://10.0.2.2:3000/api/"
-    private const val IMAGE_BASE_URL = "http://10.0.2.2:3000/"
+    private const val BASE_URL = AppConfig.API_BASE_URL
+    private const val IMAGE_BASE_URL = AppConfig.IMAGE_BASE_URL
 
     private var authToken: String? = null
 

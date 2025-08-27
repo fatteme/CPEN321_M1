@@ -75,14 +75,14 @@ class UserRepository(private val context: Context) {
         }
     }
 
-    suspend fun updateProfileName(name: String): Result<User> {
+    suspend fun updateProfile(name: String, bio: String): Result<User> {
         return try {
-            val updateRequest = UpdateProfileRequest(name = name)
+            val updateRequest = UpdateProfileRequest(name = name, bio = bio)
             val response = userApiService.updateProfile(updateRequest)
             if (response.isSuccessful && response.body()?.data != null) {
                 Result.success(response.body()!!.data!!.user)
             } else {
-                val errorMessage = response.body()?.message ?: "Failed to update profile name."
+                val errorMessage = response.body()?.message ?: "Failed to update profile."
                 Result.failure(Exception(errorMessage))
             }
         } catch (e: Exception) {

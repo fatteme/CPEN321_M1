@@ -15,7 +15,7 @@ data class User(
     val _id: String,
     val email: String,
     val name: String,
-    val bio: String,
+    val bio: String?,
     val profilePicture: String,
     val hobbies: List<String> = emptyList(),
     val createdAt: String? = null,

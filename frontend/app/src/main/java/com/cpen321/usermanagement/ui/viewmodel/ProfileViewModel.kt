@@ -24,7 +24,7 @@ data class ProfileUiState(
 )
 
 class ProfileViewModel(context: Context) : ViewModel() {
-    private val userProfileRepository = UserRepository(context)
+    private val userRepository = UserRepository(context)
     private val hobbyRepository = HobbyRepository(context)
     
     private val _uiState = MutableStateFlow(ProfileUiState())
@@ -34,7 +34,7 @@ class ProfileViewModel(context: Context) : ViewModel() {
         viewModelScope.launch {
             _uiState.value = _uiState.value.copy(isLoading = true, errorMessage = null)
             
-            val profileResult = userProfileRepository.getProfile()
+            val profileResult = userRepository.getProfile()
             val hobbiesResult = hobbyRepository.getAvailableHobbies()
             
             if (profileResult.isSuccess && hobbiesResult.isSuccess) {
@@ -78,7 +78,7 @@ class ProfileViewModel(context: Context) : ViewModel() {
             _uiState.value = _uiState.value.copy(isSaving = true, errorMessage = null, successMessage = null)
             
             val selectedHobbiesList = _uiState.value.selectedHobbies.toList()
-            val result = userProfileRepository.updateUserHobbies(selectedHobbiesList)
+            val result = userRepository.updateUserHobbies(selectedHobbiesList)
             
             if (result.isSuccess) {
                 val updatedUser = result.getOrNull()!!
@@ -111,7 +111,7 @@ class ProfileViewModel(context: Context) : ViewModel() {
             _uiState.value = _uiState.value.copy(isUploadingProfilePicture = true, errorMessage = null)
             
             try {
-                val result = userProfileRepository.uploadProfilePicture(imageUri)
+                val result = userRepository.uploadProfilePicture(imageUri)
                 if (result.isSuccess) {
                     val updatedUser = result.getOrNull()!!
                     _uiState.value = _uiState.value.copy(
@@ -135,20 +135,20 @@ class ProfileViewModel(context: Context) : ViewModel() {
         }
     }
 
-    fun updateProfileName(name: String) {
+    fun updateProfile(name: String, bio: String) {
         viewModelScope.launch {
             _uiState.value = _uiState.value.copy(isSaving = true, errorMessage = null, successMessage = null)
             
-            val result = userProfileRepository.updateProfileName(name)
+            val result = userRepository.updateProfile(name, bio)
             if (result.isSuccess) {
                 val updatedUser = result.getOrNull()!!
                 _uiState.value = _uiState.value.copy(
                     isSaving = false,
                     user = updatedUser,
-                    successMessage = "Profile name updated successfully!"
+                    successMessage = "Profile updated successfully!"
                 )
             } else {
-                val errorMessage = result.exceptionOrNull()?.message ?: "Failed to update profile name"
+                val errorMessage = result.exceptionOrNull()?.message ?: "Failed to update profile"
                 _uiState.value = _uiState.value.copy(
                     isSaving = false,
                     errorMessage = errorMessage
@@ -161,7 +161,7 @@ class ProfileViewModel(context: Context) : ViewModel() {
         viewModelScope.launch {
             _uiState.value = _uiState.value.copy(isSaving = true, errorMessage = null, successMessage = null)
             
-            val result = userProfileRepository.deleteProfile()
+            val result = userRepository.deleteProfile()
             if (result.isSuccess) {
                 _uiState.value = _uiState.value.copy(
                     isSaving = false,

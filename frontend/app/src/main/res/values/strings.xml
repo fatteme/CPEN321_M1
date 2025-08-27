@@ -26,5 +26,7 @@
     <string name="cancel">Cancel</string>
     <string name="name">Name</string>
     <string name="email">Email</string>
+    <string name="bio">Bio</string>
+    <string name="bio_placeholder">Tell us about yourself...</string>
     <string name="save">Save</string>
 </resources>

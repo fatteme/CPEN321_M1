@@ -63,7 +63,9 @@ fun ManageProfileScreen(
     var showImagePickerDialog by remember { mutableStateOf(false) }
     var name by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
+    var bio by remember { mutableStateOf<String?>(null) }
     var originalName by remember { mutableStateOf("") }
+    var originalBio by remember { mutableStateOf<String?>(null) }
     
     LaunchedEffect(Unit) {
         profileViewModel.loadProfile()
@@ -73,7 +75,9 @@ fun ManageProfileScreen(
         uiState.user?.let { user ->
             name = user.name
             email = user.email
+            bio = user.bio
             originalName = user.name
+            originalBio = user.bio
         }
     }
     
@@ -191,9 +195,6 @@ fun ManageProfileScreen(
                             label = { Text(stringResource(R.string.name)) },
                             modifier = Modifier.fillMaxWidth(),
                             singleLine = true,
-                            supportingText = if (name != originalName && name.isNotBlank()) {
-                                { Text("Name changed from \"$originalName\"") }
-                            } else null
                         )
                         
                         // Email Field
@@ -203,19 +204,32 @@ fun ManageProfileScreen(
                             label = { Text(stringResource(R.string.email)) },
                             modifier = Modifier.fillMaxWidth(),
                             singleLine = true,
-                            enabled = false // Email should not be editable
+                            enabled = false
+                        )
+                        
+                        // Bio Field
+                        OutlinedTextField(
+                            value = bio ?: "",
+                            onValueChange = { bio = it },
+                            label = { Text(stringResource(R.string.bio)) },
+                            placeholder = { Text(stringResource(R.string.bio_placeholder)) },
+                            modifier = Modifier.fillMaxWidth(),
+                            minLines = 3,
+                            maxLines = 5,
                         )
                         
                         // Save Button
                         Button(
-                            onClick = { profileViewModel.updateProfileName(name) },
+                            onClick = { profileViewModel.updateProfile(name, bio ?: "") },
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .height(56.dp),
                             colors = ButtonDefaults.buttonColors(
                                 containerColor = MaterialTheme.colorScheme.primary
                             ),
-                            enabled = !uiState.isSaving && name.isNotBlank() && name != originalName
+                            enabled = !uiState.isSaving && 
+                                    ((name.isNotBlank() && name != originalName) || 
+                                     (bio != originalBio && bio?.isNotBlank() == true))
                         ) {
                             if (uiState.isSaving) {
                                 CircularProgressIndicator(

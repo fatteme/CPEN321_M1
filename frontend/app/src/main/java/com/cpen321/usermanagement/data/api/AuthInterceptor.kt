@@ -14,9 +14,19 @@ class AuthInterceptor(private val tokenProvider: () -> String?) : Interceptor {
         }
 
         val newRequest = originalRequest.newBuilder()
-            .header("Authorization", "Bearer $token")
+            .addHeader("Authorization", "Bearer $token")
             .build()
 
-        return chain.proceed(newRequest)
+        val response = chain.proceed(newRequest)
+
+        // Retry if unauthorized
+        if (response.code == 401) {
+            val retryRequest = originalRequest.newBuilder()
+                .header("Authorization", "Bearer $token")
+                .build()
+            return chain.proceed(retryRequest)
+        }
+
+        return response
     }
 }

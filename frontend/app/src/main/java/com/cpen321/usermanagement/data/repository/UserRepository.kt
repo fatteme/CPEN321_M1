@@ -11,8 +11,7 @@ class UserRepository(private val context: Context) {
 
     suspend fun getProfile(): Result<User> {
         return try {
-            var token = tokenManager.getToken().toString()
-            val response = userApiService.getProfile(token)
+            val response = userApiService.getProfile("") // AuthInterceptor handles the token
             if (response.isSuccessful && response.body()?.data != null) {
                 Result.success(response.body()!!.data!!.user)
             } else {
@@ -28,8 +27,7 @@ class UserRepository(private val context: Context) {
 
     suspend fun updateUserHobbies(hobbies: List<String>): Result<User> {
         return try {
-            var token = tokenManager.getToken().toString()
-            val response = userApiService.updateUserHobbies(token, UpdateHobbiesRequest(hobbies))
+            val response = userApiService.updateUserHobbies("", UpdateHobbiesRequest(hobbies)) // AuthInterceptor handles the token
             if (response.isSuccessful && response.body()?.data != null) {
                 Result.success(response.body()!!.data!!.user)
             } else {

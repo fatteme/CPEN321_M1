@@ -1,9 +1,5 @@
 package com.cpen321.usermanagement.data.model
 
-data class UpdateProfilePictureRequest(
-    val profilePicture: String
-)
-
 data class ProfileData(
     val user: User
 )

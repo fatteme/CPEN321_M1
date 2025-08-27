@@ -1,14 +1,9 @@
 package com.cpen321.usermanagement.data.repository
 
 import android.content.Context
-import android.net.Uri
 import com.cpen321.usermanagement.data.api.RetrofitClient
 import com.cpen321.usermanagement.data.model.*
 import com.cpen321.usermanagement.data.storage.TokenManager
-import com.cpen321.usermanagement.util.MediaUtils.uriToFile
-import okhttp3.MediaType.Companion.toMediaType
-import okhttp3.MultipartBody
-import okhttp3.RequestBody.Companion.asRequestBody
 
 class UserRepository(private val context: Context) {
     private val userApiService = RetrofitClient.userService
@@ -16,7 +11,8 @@ class UserRepository(private val context: Context) {
 
     suspend fun getProfile(): Result<User> {
         return try {
-            val response = userApiService.getProfile()
+            var token = tokenManager.getToken().toString()
+            val response = userApiService.getProfile(token)
             if (response.isSuccessful && response.body()?.data != null) {
                 Result.success(response.body()!!.data!!.user)
             } else {
@@ -32,7 +28,8 @@ class UserRepository(private val context: Context) {
 
     suspend fun updateUserHobbies(hobbies: List<String>): Result<User> {
         return try {
-            val response = userApiService.updateUserHobbies(UpdateHobbiesRequest(hobbies))
+            var token = tokenManager.getToken().toString()
+            val response = userApiService.updateUserHobbies(token, UpdateHobbiesRequest(hobbies))
             if (response.isSuccessful && response.body()?.data != null) {
                 Result.success(response.body()!!.data!!.user)
             } else {

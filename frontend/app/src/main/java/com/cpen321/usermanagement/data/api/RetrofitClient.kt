@@ -36,19 +36,12 @@ object RetrofitClient {
     val userService: UserService = retrofit.create(UserService::class.java)
     val hobbyService: HobbyService = retrofit.create(HobbyService::class.java)
 
-    /**
-     * Sets the authentication token to be used for API requests
-     * @param token The authentication token
-     */
+
     fun setAuthToken(token: String?) {
         authToken = token
     }
 
-    /**
-     * Constructs the full URL for an image by combining the image base URL with the image path
-     * @param imagePath The image path returned from the backend (e.g., /uploads/profile-pictures/filename.jpg)
-     * @return The complete URL that can be used to display the image
-     */
+
     fun getImageUrl(imagePath: String): String {
         return if (!imagePath.startsWith("http")) {
             IMAGE_BASE_URL + imagePath

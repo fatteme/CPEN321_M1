@@ -17,8 +17,10 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.cpen321.usermanagement.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -30,7 +32,7 @@ fun MainScreen(
             TopAppBar(
                 title = {
                     Text(
-                        text = "User Management",
+                        text = stringResource(R.string.app_name),
                         style = MaterialTheme.typography.titleLarge,
                         fontWeight = FontWeight.Medium
                     )
@@ -42,7 +44,7 @@ fun MainScreen(
                     ) {
                         Icon(
                             imageVector = Icons.Default.Person,
-                            contentDescription = "Profile",
+                            contentDescription = stringResource(R.string.profile),
                             modifier = Modifier.size(28.dp),
                             tint = MaterialTheme.colorScheme.onSurfaceVariant
                         )
@@ -62,7 +64,7 @@ fun MainScreen(
             contentAlignment = Alignment.Center
         ) {
             Text(
-                text = "Welcome to the app!",
+                text = stringResource(R.string.welcome),
                 style = MaterialTheme.typography.bodyLarge,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )

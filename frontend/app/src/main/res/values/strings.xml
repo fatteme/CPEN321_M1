@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">User Management</string>
+    <string name="app_name">CPEN 321 - M1</string>
+    <string name="auth_message">Please sign in to continue.</string>
+    <string name="welcome">Welcome!</string>
     <string name="hobbies">Hobbies</string>
     <string name="select_hobbies">Select your hobbies:</string>
     <string name="save_hobbies">Save Hobbies</string>
@@ -14,7 +16,6 @@
     <string name="edit_profile_picture">Edit Profile Picture</string>
     <string name="sign_out">Sign Out</string>
     <string name="selected_chip">Selected</string>
-    <string name="welcome_message">Welcome! Please sign in to continue.</string>
     <string name="google_logo">Google Logo</string>
     <string name="sign_in_with_google">Sign in with Google</string>
 </resources>

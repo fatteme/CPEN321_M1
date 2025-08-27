@@ -71,7 +71,7 @@ fun AuthScreen(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-            // App Logo/Title
+            // App Title
             Text(
                 text = stringResource(R.string.app_name),
                 style = MaterialTheme.typography.headlineLarge,
@@ -83,7 +83,7 @@ fun AuthScreen(
             Spacer(modifier = Modifier.height(16.dp))
             
             Text(
-                text = stringResource(R.string.welcome_message),
+                text = stringResource(R.string.auth_message),
                 style = MaterialTheme.typography.bodyLarge,
                 textAlign = TextAlign.Center,
                 color = MaterialTheme.colorScheme.onSurfaceVariant

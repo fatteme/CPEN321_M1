@@ -20,7 +20,6 @@ router.post(
     next: NextFunction
   ) => {
     try {
-      console.log('req.file', req.file);
       if (!req.file) {
         return res.status(400).json({
           message: 'No file uploaded',
@@ -32,8 +31,6 @@ router.post(
         req.file.path,
         user._id.toString()
       );
-
-      console.log('image', image);
 
       res.status(200).json({
         message: 'Image uploaded successfully',

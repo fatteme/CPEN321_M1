@@ -76,8 +76,6 @@ router.post(
     next: NextFunction
   ) => {
     try {
-      console.log('req.body', req.body);
-
       const user = req.user!;
       const { profilePicture } = req.body;
 

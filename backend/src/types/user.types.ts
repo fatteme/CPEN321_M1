@@ -25,10 +25,6 @@ export const userSchema = z.object({
   hobbies: z.array(z.string()).default([]),
 });
 
-export const updateUserProfilePictureSchema = z.object({
-  profilePicture: z.string().min(1),
-});
-
 export const updateUserHobbiesSchema = z.object({
   hobbies: z
     .array(z.string())
@@ -48,10 +44,6 @@ export type GetProfileResponse = {
 };
 
 export type UpdateUserHobbiesRequest = z.infer<typeof updateUserHobbiesSchema>;
-
-export type UpdateUserProfilePictureRequest = z.infer<
-  typeof updateUserProfilePictureSchema
->;
 
 // Generic types
 // ------------------------------------------------------------

@@ -33,7 +33,6 @@ object RetrofitClient {
         .build()
 
     val authService: AuthService = retrofit.create(AuthService::class.java)
-    val mediaService: MediaService = retrofit.create(MediaService::class.java)
     val userService: UserService = retrofit.create(UserService::class.java)
     val hobbyService: HobbyService = retrofit.create(HobbyService::class.java)
 

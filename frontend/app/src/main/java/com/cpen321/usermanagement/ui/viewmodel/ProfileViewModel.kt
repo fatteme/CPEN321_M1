@@ -107,30 +107,12 @@ class ProfileViewModel(context: Context) : ViewModel() {
     
     fun uploadProfilePicture(imageUri: Uri) {
         viewModelScope.launch {
-            _uiState.value = _uiState.value.copy(isUploadingProfilePicture = true, errorMessage = null)
-            
-            try {
-                val result = userProfileRepository.uploadProfilePicture(imageUri)
-                if (result.isSuccess) {
-                    val updatedUser = result.getOrNull()!!
-                    _uiState.value = _uiState.value.copy(
-                        isUploadingProfilePicture = false,
-                        user = updatedUser,
-                        successMessage = "Profile picture updated successfully!"
-                    )
-                } else {
-                    val errorMessage = result.exceptionOrNull()?.message ?: "Failed to upload profile picture"
-                    _uiState.value = _uiState.value.copy(
-                        isUploadingProfilePicture = false,
-                        errorMessage = errorMessage
-                    )
-                }
-            } catch (e: Exception) {
-                _uiState.value = _uiState.value.copy(
-                    isUploadingProfilePicture = false,
-                    errorMessage = e.message ?: "Failed to upload profile picture"
-                )
-            }
+            var currentUser = _uiState.value.user ?: return@launch
+            currentUser.profilePicture = imageUri.toString()
+
+            _uiState.value = _uiState.value.copy(
+                isUploadingProfilePicture = false
+            )
         }
     }
 }

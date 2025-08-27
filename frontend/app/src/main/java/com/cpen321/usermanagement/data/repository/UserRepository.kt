@@ -12,7 +12,6 @@ import okhttp3.RequestBody.Companion.asRequestBody
 
 class UserRepository(private val context: Context) {
     private val userApiService = RetrofitClient.userService
-    private val mediaApiService = RetrofitClient.mediaService
     private val tokenManager = TokenManager(context)
 
     suspend fun getProfile(): Result<User> {
@@ -42,36 +41,6 @@ class UserRepository(private val context: Context) {
             }
         } catch (e: Exception) {
             Result.failure(e)
-        }
-    }
-
-    suspend fun uploadProfilePicture(imageUri: Uri): Result<User> {
-        return try {
-            val file = uriToFile(context, imageUri)
-            val requestBody = file.asRequestBody("image/*".toMediaType())
-            val multipartBody = MultipartBody.Part.createFormData("media", file.name, requestBody)
-
-            val uploadResponse = mediaApiService.uploadImage(multipartBody)
-
-            if (uploadResponse.isSuccessful && uploadResponse.body()?.data != null) {
-                val uploadData = uploadResponse.body()!!.data!!
-                val profilePicture = uploadData.image
-                val updateRequest = UpdateProfilePictureRequest(profilePicture)
-
-                val updateResponse = userApiService.updateProfilePicture(updateRequest)
-
-                if (updateResponse.isSuccessful && updateResponse.body()?.data != null) {
-                    Result.success(updateResponse.body()!!.data!!.user)
-                } else {
-                    val errorMessage = updateResponse.body()?.message ?: "Failed to update profile picture."
-                    Result.failure(Exception(errorMessage))
-                }
-            } else {
-                val errorMessage = uploadResponse.body()?.message ?: "Failed to upload image."
-                Result.failure(Exception(errorMessage))
-            }
-        } catch (e: Exception) {
-            Result.failure(Exception("Failed to upload profile picture: ${e.message}"))
         }
     }
 }

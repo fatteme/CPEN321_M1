@@ -74,4 +74,19 @@ class UserRepository(private val context: Context) {
             Result.failure(Exception("Failed to upload profile picture: ${e.message}"))
         }
     }
+
+    suspend fun updateProfileName(name: String): Result<User> {
+        return try {
+            val updateRequest = UpdateProfileRequest(name = name)
+            val response = userApiService.updateProfile(updateRequest)
+            if (response.isSuccessful && response.body()?.data != null) {
+                Result.success(response.body()!!.data!!.user)
+            } else {
+                val errorMessage = response.body()?.message ?: "Failed to update profile name."
+                Result.failure(Exception(errorMessage))
+            }
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
 }

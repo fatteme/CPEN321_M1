@@ -134,4 +134,26 @@ class ProfileViewModel(context: Context) : ViewModel() {
             }
         }
     }
+
+    fun updateProfileName(name: String) {
+        viewModelScope.launch {
+            _uiState.value = _uiState.value.copy(isSaving = true, errorMessage = null, successMessage = null)
+            
+            val result = userProfileRepository.updateProfileName(name)
+            if (result.isSuccess) {
+                val updatedUser = result.getOrNull()!!
+                _uiState.value = _uiState.value.copy(
+                    isSaving = false,
+                    user = updatedUser,
+                    successMessage = "Profile name updated successfully!"
+                )
+            } else {
+                val errorMessage = result.exceptionOrNull()?.message ?: "Failed to update profile name"
+                _uiState.value = _uiState.value.copy(
+                    isSaving = false,
+                    errorMessage = errorMessage
+                )
+            }
+        }
+    }
 }

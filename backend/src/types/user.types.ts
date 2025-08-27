@@ -33,10 +33,10 @@ export const updateProfileSchema = z.object({
   hobbies: z
     .array(z.string())
     .min(1)
-    .optional()
-    .refine(val => val?.every(v => HOBBIES.includes(v)), {
+    .refine(val => !val || val.every(v => HOBBIES.includes(v)), {
       message: 'Hobby must be in the available hobbies list',
-    }),
+    })
+    .optional(),
   profilePicture: z.string().min(1).optional(),
 });
 

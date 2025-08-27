@@ -63,6 +63,7 @@ fun ManageProfileScreen(
     var showImagePickerDialog by remember { mutableStateOf(false) }
     var name by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
+    var originalName by remember { mutableStateOf("") }
     
     LaunchedEffect(Unit) {
         profileViewModel.loadProfile()
@@ -72,6 +73,7 @@ fun ManageProfileScreen(
         uiState.user?.let { user ->
             name = user.name
             email = user.email
+            originalName = user.name
         }
     }
     
@@ -188,7 +190,10 @@ fun ManageProfileScreen(
                             onValueChange = { name = it },
                             label = { Text(stringResource(R.string.name)) },
                             modifier = Modifier.fillMaxWidth(),
-                            singleLine = true
+                            singleLine = true,
+                            supportingText = if (name != originalName && name.isNotBlank()) {
+                                { Text("Name changed from \"$originalName\"") }
+                            } else null
                         )
                         
                         // Email Field
@@ -203,19 +208,28 @@ fun ManageProfileScreen(
                         
                         // Save Button
                         Button(
-                            onClick = { /* TODO: Implement save profile functionality */ },
+                            onClick = { profileViewModel.updateProfileName(name) },
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .height(56.dp),
                             colors = ButtonDefaults.buttonColors(
                                 containerColor = MaterialTheme.colorScheme.primary
-                            )
+                            ),
+                            enabled = !uiState.isSaving && name.isNotBlank() && name != originalName
                         ) {
-                            Text(
-                                text = stringResource(R.string.save),
-                                style = MaterialTheme.typography.labelLarge,
-                                fontWeight = FontWeight.Medium
-                            )
+                            if (uiState.isSaving) {
+                                CircularProgressIndicator(
+                                    modifier = Modifier.size(20.dp),
+                                    color = MaterialTheme.colorScheme.onPrimary,
+                                    strokeWidth = 2.dp
+                                )
+                            } else {
+                                Text(
+                                    text = stringResource(R.string.save),
+                                    style = MaterialTheme.typography.labelLarge,
+                                    fontWeight = FontWeight.Medium
+                                )
+                            }
                         }
                     }
                 }

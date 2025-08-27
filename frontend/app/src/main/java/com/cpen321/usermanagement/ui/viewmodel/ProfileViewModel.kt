@@ -156,4 +156,24 @@ class ProfileViewModel(context: Context) : ViewModel() {
             }
         }
     }
+
+    fun deleteProfile() {
+        viewModelScope.launch {
+            _uiState.value = _uiState.value.copy(isSaving = true, errorMessage = null, successMessage = null)
+            
+            val result = userProfileRepository.deleteProfile()
+            if (result.isSuccess) {
+                _uiState.value = _uiState.value.copy(
+                    isSaving = false,
+                    successMessage = "Account deleted successfully!"
+                )
+            } else {
+                val errorMessage = result.exceptionOrNull()?.message ?: "Failed to delete account"
+                _uiState.value = _uiState.value.copy(
+                    isSaving = false,
+                    errorMessage = errorMessage
+                )
+            }
+        }
+    }
 }

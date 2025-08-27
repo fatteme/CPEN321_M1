@@ -49,7 +49,7 @@ export class AuthService {
     try {
       const googleUserInfo = await this.verifyGoogleToken(idToken);
 
-      const user = await userRepository.findOrCreateUser(googleUserInfo);
+      const user = await this.findOrCreateUser(googleUserInfo);
 
       logger.info('User authenticated:', user);
 
@@ -59,6 +59,23 @@ export class AuthService {
     } catch (error) {
       logger.error('Authentication failed:', error);
       throw error;
+    }
+  }
+
+  private async findOrCreateUser(
+    googleUserInfo: GoogleUserInfo
+  ): Promise<IUser> {
+    try {
+      const user = await userRepository.findByGoogleId(googleUserInfo.googleId);
+
+      if (user) {
+        return user;
+      }
+
+      return await userRepository.create(googleUserInfo);
+    } catch (error) {
+      logger.error('Error in findOrCreateUser:', error);
+      throw new Error('Failed to process user');
     }
   }
 }

@@ -7,36 +7,6 @@ import { userSchema } from '../types/user.types';
 import logger from '../utils/logger';
 
 export class UserRepository {
-  async findById(_id: mongoose.Types.ObjectId): Promise<IUser | null> {
-    try {
-      const user = await User.findOne({ _id });
-
-      if (!user) {
-        return null;
-      }
-
-      return user;
-    } catch (error) {
-      console.error('Error finding user by Google ID:', error);
-      throw new Error('Failed to find user');
-    }
-  }
-
-  async findByGoogleId(googleId: string): Promise<IUser | null> {
-    try {
-      const user = await User.findOne({ googleId });
-
-      if (!user) {
-        return null;
-      }
-
-      return user;
-    } catch (error) {
-      console.error('Error finding user by Google ID:', error);
-      throw new Error('Failed to find user');
-    }
-  }
-
   async create(userInfo: GoogleUserInfo): Promise<IUser> {
     try {
       const validatedData = userSchema.parse(userInfo);
@@ -75,18 +45,42 @@ export class UserRepository {
     }
   }
 
-  async findOrCreateUser(googleUserInfo: GoogleUserInfo): Promise<IUser> {
+  async delete(userId: mongoose.Types.ObjectId): Promise<void> {
     try {
-      const user = await this.findByGoogleId(googleUserInfo.googleId);
+      await User.findByIdAndDelete(userId);
+    } catch (error) {
+      logger.error('Error deleting user:', error);
+      throw new Error('Failed to delete user');
+    }
+  }
 
-      if (user) {
-        return user;
+  async findById(_id: mongoose.Types.ObjectId): Promise<IUser | null> {
+    try {
+      const user = await User.findOne({ _id });
+
+      if (!user) {
+        return null;
       }
 
-      return await this.create(googleUserInfo);
+      return user;
     } catch (error) {
-      logger.error('Error in findOrCreateUser:', error);
-      throw new Error('Failed to process user');
+      console.error('Error finding user by Google ID:', error);
+      throw new Error('Failed to find user');
+    }
+  }
+
+  async findByGoogleId(googleId: string): Promise<IUser | null> {
+    try {
+      const user = await User.findOne({ googleId });
+
+      if (!user) {
+        return null;
+      }
+
+      return user;
+    } catch (error) {
+      console.error('Error finding user by Google ID:', error);
+      throw new Error('Failed to find user');
     }
   }
 }

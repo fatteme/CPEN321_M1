@@ -70,6 +70,12 @@ fun AppNavigation(
                 },
                 onManageHobbiesClick = {
                     navController.navigate(NavRoutes.MANAGE_HOBBIES)
+                },
+                onAccountDeleted = {
+                    authViewModel.logout()
+                    navController.navigate(NavRoutes.AUTH) {
+                        popUpTo(0) { inclusive = true }
+                    }
                 }
             )
         }

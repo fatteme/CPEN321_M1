@@ -57,7 +57,8 @@ fun ProfileScreen(
     onBackClick: () -> Unit,
     onSignOut: () -> Unit,
     onManageProfileClick: () -> Unit,
-    onManageHobbiesClick: () -> Unit
+    onManageHobbiesClick: () -> Unit,
+    onAccountDeleted: () -> Unit
 ) {
     val uiState by profileViewModel.uiState.collectAsState()
     val snackBarHostState = remember { SnackbarHostState() }
@@ -78,6 +79,11 @@ fun ProfileScreen(
         uiState.successMessage?.let { message ->
             snackBarHostState.showSnackbar(message)
             profileViewModel.clearSuccessMessage()
+            
+            // If the success message is about account deletion, trigger the callback
+            if (message.contains("deleted successfully")) {
+                onAccountDeleted()
+            }
         }
     }
     
@@ -180,7 +186,7 @@ fun ProfileScreen(
                 Button(
                     onClick = {
                         showDeleteAccountDialog = false
-                        // TODO: Implement delete account functionality
+                        profileViewModel.deleteProfile()
                     },
                     colors = ButtonDefaults.buttonColors(
                         containerColor = MaterialTheme.colorScheme.error

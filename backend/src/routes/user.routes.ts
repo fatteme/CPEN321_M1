@@ -15,4 +15,6 @@ router.post(
   userController.updateProfile
 );
 
+router.delete('/profile', userController.deleteProfile);
+
 export default router;

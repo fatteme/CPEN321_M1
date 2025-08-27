@@ -3,6 +3,7 @@ import { NextFunction, Request, Response } from 'express';
 import { userRepository } from '../repositories/user.repository';
 import { GetProfileResponse, UpdateProfileRequest } from '../types/user.types';
 import logger from '../utils/logger';
+import { MediaService } from '../services/media.service';
 
 export class UserController {
   getProfile(req: Request<{}, {}, {}>, res: Response<GetProfileResponse>) {
@@ -40,6 +41,30 @@ export class UserController {
       if (error instanceof Error) {
         return res.status(500).json({
           message: error.message || 'Failed to update user info',
+        });
+      }
+
+      next(error);
+    }
+  }
+
+  async deleteProfile(req: Request, res: Response, next: NextFunction) {
+    try {
+      const user = req.user!;
+
+      await MediaService.deleteAllUserImages(user._id.toString());
+
+      await userRepository.delete(user._id);
+
+      res.status(200).json({
+        message: 'User deleted successfully',
+      });
+    } catch (error) {
+      logger.error('Failed to delete user:', error);
+
+      if (error instanceof Error) {
+        return res.status(500).json({
+          message: error.message || 'Failed to delete user',
         });
       }
 

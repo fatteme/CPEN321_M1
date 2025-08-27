@@ -33,4 +33,19 @@ export class MediaService {
       console.error('Failed to delete old profile picture:', error);
     }
   }
+
+  static async deleteAllUserImages(userId: string): Promise<void> {
+    try {
+      if (!fs.existsSync(IMAGES_DIR)) {
+        return;
+      }
+
+      const files = fs.readdirSync(IMAGES_DIR);
+      const userFiles = files.filter(file => file.startsWith(userId + '-'));
+
+      await Promise.all(userFiles.map(file => this.deleteImage(file)));
+    } catch (error) {
+      console.error('Failed to delete user images:', error);
+    }
+  }
 }

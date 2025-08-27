@@ -24,6 +24,4 @@ router.post(
   userController.updateUserProfilePicture
 );
 
-router.delete('/profile-picture', userController.deleteUserProfilePicture);
-
 export default router;

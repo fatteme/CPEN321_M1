@@ -92,43 +92,4 @@ export class UserController {
       next(error);
     }
   }
-
-  async deleteUserProfilePicture(
-    req: Request,
-    res: Response<GetProfileResponse>,
-    next: NextFunction
-  ) {
-    try {
-      const user = req.user!;
-
-      if (user.profilePicture) {
-        await MediaService.deleteImage(user.profilePicture);
-      }
-
-      const updatedUser = await userRepository.update(user._id, {
-        profilePicture: undefined,
-      });
-
-      if (!updatedUser) {
-        return res.status(404).json({
-          message: 'User not found',
-        });
-      }
-
-      res.status(200).json({
-        message: 'User profile picture deleted successfully',
-        data: { user: updatedUser },
-      });
-    } catch (error) {
-      logger.error('Failed to delete user profile picture:', error);
-
-      if (error instanceof Error) {
-        return res.status(500).json({
-          message: error.message || 'Failed to delete user profile picture',
-        });
-      }
-
-      next(error);
-    }
-  }
 }

@@ -87,6 +87,7 @@ class ProfileViewModel(context: Context) : ViewModel() {
                     user = updatedUser,
                     successMessage = "Hobbies updated successfully!"
                 )
+
             } else {
                 val errorMessage = result.exceptionOrNull()?.message ?: "Failed to update hobbies"
                 _uiState.value = _uiState.value.copy(

@@ -18,4 +18,13 @@
     <string name="selected_chip">Selected</string>
     <string name="google_logo">Google Logo</string>
     <string name="sign_in_with_google">Sign in with Google</string>
+    <string name="manage_profile">Manage Profile</string>
+    <string name="manage_hobbies">Manage Hobbies</string>
+    <string name="delete_account">Delete Account</string>
+    <string name="delete_account_confirmation">Are you sure you want to delete your account? This action cannot be undone.</string>
+    <string name="confirm">Confirm</string>
+    <string name="cancel">Cancel</string>
+    <string name="name">Name</string>
+    <string name="email">Email</string>
+    <string name="save">Save</string>
 </resources>

@@ -55,7 +55,7 @@ class UserRepository(private val context: Context) {
 
             if (uploadResponse.isSuccessful && uploadResponse.body()?.data != null) {
                 val uploadData = uploadResponse.body()!!.data!!
-                val profilePicture = uploadData.url
+                val profilePicture = uploadData.image
                 val updateRequest = UpdateProfilePictureRequest(profilePicture)
 
                 val updateResponse = userApiService.updateProfilePicture(updateRequest)

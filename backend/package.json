@@ -6,13 +6,11 @@
     "build": "tsc",
     "start": "node dist/index.js",
     "dev": "nodemon --exec ts-node src/index.ts",
-    "format": "prettier --write \"src/**/*.{ts,js,json}\"",
-    "format:check": "prettier --check \"src/**/*.{ts,js,json}\"",
+    "format": "prettier --check \"src/**/*.{ts,js,json}\"",
+    "format:fix": "prettier --write \"src/**/*.{ts,js,json}\"",
     "lint": "eslint src/**/*.ts",
     "lint:fix": "eslint src/**/*.ts --fix",
-    "lint:check": "eslint src/**/*.ts --max-warnings 0",
-    "lint:quiet": "eslint src/**/*.ts --quiet",
-    "code-quality": "npm run lint && npm run format:check"
+    "code-quality": "npm run lint && npm run format"
   },
   "author": "",
   "license": "ISC",

@@ -88,9 +88,6 @@ fun AppNavigation(
                 profileViewModel = profileViewModel,
                 onBackClick = {
                     navController.popBackStack()
-                },
-                onHobbiesSaved = {
-                    navController.popBackStack()
                 }
             )
         }

@@ -52,7 +52,6 @@ import com.cpen321.usermanagement.ui.viewmodel.ProfileViewModel
 fun ManageHobbiesScreen(
     profileViewModel: ProfileViewModel,
     onBackClick: () -> Unit,
-    onHobbiesSaved: () -> Unit
 ) {
     val uiState by profileViewModel.uiState.collectAsState()
     val snackBarHostState = remember { SnackbarHostState() }
@@ -72,8 +71,6 @@ fun ManageHobbiesScreen(
         uiState.successMessage?.let { message ->
             snackBarHostState.showSnackbar(message)
             profileViewModel.clearSuccessMessage()
-            // Navigate back to profile screen after successful save
-            onHobbiesSaved()
         }
     }
     

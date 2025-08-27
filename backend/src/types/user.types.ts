@@ -10,6 +10,7 @@ export interface IUser extends Document {
   email: string;
   name: string;
   profilePicture?: string;
+  bio?: string;
   hobbies: string[];
   createdAt: Date;
   updatedAt: Date;
@@ -22,20 +23,21 @@ export const userSchema = z.object({
   name: z.string().min(1),
   googleId: z.string().min(1),
   profilePicture: z.string().optional(),
+  bio: z.string().max(500).optional(),
   hobbies: z.array(z.string()).default([]),
 });
 
-export const updateUserProfilePictureSchema = z.object({
-  profilePicture: z.string().min(1),
-});
-
-export const updateUserHobbiesSchema = z.object({
+export const updateProfileSchema = z.object({
+  name: z.string().min(1).optional(),
+  bio: z.string().max(500).optional(),
   hobbies: z
     .array(z.string())
     .min(1)
-    .refine(val => val.every(v => HOBBIES.includes(v)), {
+    .optional()
+    .refine(val => val?.every(v => HOBBIES.includes(v)), {
       message: 'Hobby must be in the available hobbies list',
     }),
+  profilePicture: z.string().min(1).optional(),
 });
 
 // Request types
@@ -47,11 +49,7 @@ export type GetProfileResponse = {
   };
 };
 
-export type UpdateUserHobbiesRequest = z.infer<typeof updateUserHobbiesSchema>;
-
-export type UpdateUserProfilePictureRequest = z.infer<
-  typeof updateUserProfilePictureSchema
->;
+export type UpdateProfileRequest = z.infer<typeof updateProfileSchema>;
 
 // Generic types
 // ------------------------------------------------------------

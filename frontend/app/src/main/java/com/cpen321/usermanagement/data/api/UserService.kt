@@ -10,13 +10,8 @@ interface UserService {
     @GET("user/profile")
     suspend fun getProfile(): Response<ApiResponse<ProfileData>>
 
-    @POST("user/profile-picture")
-    suspend fun updateProfilePicture(
-        @Body request: UpdateProfilePictureRequest
-    ): Response<ApiResponse<ProfileData>>
-
-    @POST("user/hobbies")
-    suspend fun updateUserHobbies(
-        @Body request: UpdateHobbiesRequest
+    @POST("user/profile")
+    suspend fun updateProfile(
+        @Body request: UpdateProfileRequest
     ): Response<ApiResponse<ProfileData>>
 }

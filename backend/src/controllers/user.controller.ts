@@ -1,12 +1,7 @@
 import { NextFunction, Request, Response } from 'express';
 
 import { userRepository } from '../repositories/user.repository';
-import { MediaService } from '../services/media.service';
-import {
-  GetProfileResponse,
-  UpdateUserHobbiesRequest,
-  UpdateUserProfilePictureRequest,
-} from '../types/user.types';
+import { GetProfileResponse, UpdateProfileRequest } from '../types/user.types';
 import logger from '../utils/logger';
 
 export class UserController {
@@ -19,16 +14,15 @@ export class UserController {
     });
   }
 
-  async updateUserHobbies(
-    req: Request<{}, {}, UpdateUserHobbiesRequest>,
+  async updateProfile(
+    req: Request<{}, {}, UpdateProfileRequest>,
     res: Response<GetProfileResponse>,
     next: NextFunction
   ) {
     try {
       const user = req.user!;
-      const { hobbies } = req.body;
 
-      const updatedUser = await userRepository.update(user._id, { hobbies });
+      const updatedUser = await userRepository.update(user._id, req.body);
 
       if (!updatedUser) {
         return res.status(404).json({
@@ -37,55 +31,15 @@ export class UserController {
       }
 
       res.status(200).json({
-        message: 'User hobbies updated successfully',
+        message: 'User info updated successfully',
         data: { user: updatedUser },
       });
     } catch (error) {
-      logger.error('Failed to update user hobbies:', error);
+      logger.error('Failed to update user info:', error);
 
       if (error instanceof Error) {
         return res.status(500).json({
-          message: error.message || 'Failed to update user hobbies',
-        });
-      }
-
-      next(error);
-    }
-  }
-
-  async updateUserProfilePicture(
-    req: Request<{}, {}, UpdateUserProfilePictureRequest>,
-    res: Response<GetProfileResponse>,
-    next: NextFunction
-  ) {
-    try {
-      const user = req.user!;
-      const { profilePicture } = req.body;
-
-      if (user.profilePicture) {
-        await MediaService.deleteImage(user.profilePicture);
-      }
-
-      const updatedUser = await userRepository.update(user._id, {
-        profilePicture,
-      });
-
-      if (!updatedUser) {
-        return res.status(404).json({
-          message: 'User not found',
-        });
-      }
-
-      res.status(200).json({
-        message: 'User profile picture updated successfully',
-        data: { user: updatedUser },
-      });
-    } catch (error) {
-      logger.error('Failed to update user profile picture:', error);
-
-      if (error instanceof Error) {
-        return res.status(500).json({
-          message: error.message || 'Failed to update user profile picture',
+          message: error.message || 'Failed to update user info',
         });
       }
 

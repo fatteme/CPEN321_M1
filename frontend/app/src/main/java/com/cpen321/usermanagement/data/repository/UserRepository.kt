@@ -33,7 +33,8 @@ class UserRepository(private val context: Context) {
 
     suspend fun updateUserHobbies(hobbies: List<String>): Result<User> {
         return try {
-            val response = userApiService.updateUserHobbies(UpdateHobbiesRequest(hobbies))
+            val updateRequest = UpdateProfileRequest(hobbies = hobbies)
+            val response = userApiService.updateProfile(updateRequest)
             if (response.isSuccessful && response.body()?.data != null) {
                 Result.success(response.body()!!.data!!.user)
             } else {
@@ -55,10 +56,9 @@ class UserRepository(private val context: Context) {
 
             if (uploadResponse.isSuccessful && uploadResponse.body()?.data != null) {
                 val uploadData = uploadResponse.body()!!.data!!
-                val profilePicture = uploadData.image
-                val updateRequest = UpdateProfilePictureRequest(profilePicture)
+                val updateRequest = UpdateProfileRequest(profilePicture = uploadData.image.toString())
 
-                val updateResponse = userApiService.updateProfilePicture(updateRequest)
+                val updateResponse = userApiService.updateProfile(updateRequest)
 
                 if (updateResponse.isSuccessful && updateResponse.body()?.data != null) {
                     Result.success(updateResponse.body()!!.data!!.user)

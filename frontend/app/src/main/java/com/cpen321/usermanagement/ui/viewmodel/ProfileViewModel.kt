@@ -106,6 +106,11 @@ class ProfileViewModel(context: Context) : ViewModel() {
         _uiState.value = _uiState.value.copy(successMessage = null)
     }
     
+    fun needsProfileCompletion(): Boolean {
+        val user = _uiState.value.user
+        return user?.bio == null || user.bio.isBlank()
+    }
+    
     fun uploadProfilePicture(imageUri: Uri) {
         viewModelScope.launch {
             _uiState.value = _uiState.value.copy(isUploadingProfilePicture = true, errorMessage = null)

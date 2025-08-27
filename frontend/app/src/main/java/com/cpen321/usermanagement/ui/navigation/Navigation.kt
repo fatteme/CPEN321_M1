@@ -1,6 +1,7 @@
 package com.cpen321.usermanagement.ui.navigation
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.navigation.NavHostController
@@ -11,6 +12,7 @@ import com.cpen321.usermanagement.ui.screen.MainScreen
 import com.cpen321.usermanagement.ui.screen.ProfileScreen
 import com.cpen321.usermanagement.ui.screen.ManageProfileScreen
 import com.cpen321.usermanagement.ui.screen.ManageHobbiesScreen
+import com.cpen321.usermanagement.ui.screen.ProfileCompletionScreen
 import com.cpen321.usermanagement.ui.viewmodel.AuthViewModel
 import com.cpen321.usermanagement.ui.viewmodel.ProfileViewModel
 
@@ -20,6 +22,7 @@ object NavRoutes {
     const val PROFILE = "profile"
     const val MANAGE_PROFILE = "manage_profile"
     const val MANAGE_HOBBIES = "manage_hobbies"
+    const val PROFILE_COMPLETION = "profile_completion"
 }
 
 @Composable
@@ -29,17 +32,46 @@ fun AppNavigation(
     profileViewModel: ProfileViewModel
 ) {
     val authUiState by authViewModel.uiState.collectAsState()
+    val profileUiState by profileViewModel.uiState.collectAsState()
+    
+    // Handle navigation after authentication and profile loading
+    LaunchedEffect(authUiState.isAuthenticated, profileUiState.user) {
+        if (authUiState.isAuthenticated && profileUiState.user != null) {
+            val needsProfileCompletion = profileUiState.user?.bio == null || 
+                profileUiState.user?.bio?.isBlank() == true
+            
+            if (needsProfileCompletion) {
+                navController.navigate(NavRoutes.PROFILE_COMPLETION) {
+                    popUpTo(NavRoutes.AUTH) { inclusive = true }
+                }
+            } else {
+                navController.navigate(NavRoutes.MAIN) {
+                    popUpTo(NavRoutes.AUTH) { inclusive = true }
+                }
+            }
+        }
+    }
     
     NavHost(
         navController = navController,
-        startDestination = if (authUiState.isAuthenticated) NavRoutes.MAIN else NavRoutes.AUTH
+        startDestination = NavRoutes.AUTH
     ) {
         composable(NavRoutes.AUTH) {
             AuthScreen(
                 authViewModel = authViewModel,
                 onAuthSuccess = {
+                    // Load profile data first, then navigate based on bio status
+                    profileViewModel.loadProfile()
+                }
+            )
+        }
+        
+        composable(NavRoutes.PROFILE_COMPLETION) {
+            ProfileCompletionScreen(
+                profileViewModel = profileViewModel,
+                onProfileCompleted = {
                     navController.navigate(NavRoutes.MAIN) {
-                        popUpTo(NavRoutes.AUTH) { inclusive = true }
+                        popUpTo(NavRoutes.PROFILE_COMPLETION) { inclusive = true }
                     }
                 }
             )

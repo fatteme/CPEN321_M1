@@ -31,6 +31,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.cpen321.usermanagement.ui.viewmodel.ProfileViewModel
+import com.cpen321.usermanagement.ui.components.MessageSnackbar
 
 @Composable
 fun ProfileCompletionScreen(
@@ -49,20 +50,7 @@ fun ProfileCompletionScreen(
         }
     }
     
-    LaunchedEffect(uiState.successMessage) {
-        uiState.successMessage?.let { message ->
-            snackBarHostState.showSnackbar(message)
-            profileViewModel.clearSuccessMessage()
-            onProfileCompleted()
-        }
-    }
-    
-    LaunchedEffect(uiState.errorMessage) {
-        uiState.errorMessage?.let { message ->
-            snackBarHostState.showSnackbar(message)
-            profileViewModel.clearError()
-        }
-    }
+
     
     Box(modifier = Modifier.fillMaxSize()) {
         Column(
@@ -162,8 +150,15 @@ fun ProfileCompletionScreen(
             }
         }
         
-        SnackbarHost(
+        MessageSnackbar(
             hostState = snackBarHostState,
+            successMessage = uiState.successMessage,
+            errorMessage = uiState.errorMessage,
+            onSuccessMessageShown = { 
+                profileViewModel.clearSuccessMessage()
+                onProfileCompleted()
+            },
+            onErrorMessageShown = { profileViewModel.clearError() },
             modifier = Modifier.align(Alignment.BottomCenter)
         )
     }

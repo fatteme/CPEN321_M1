@@ -50,6 +50,7 @@ import androidx.compose.ui.unit.dp
 import com.cpen321.usermanagement.R
 import com.cpen321.usermanagement.ui.viewmodel.ProfileViewModel
 import androidx.compose.ui.graphics.vector.ImageVector
+import com.cpen321.usermanagement.ui.components.MessageSnackbar
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -67,25 +68,6 @@ fun ProfileScreen(
     
     LaunchedEffect(Unit) {
         profileViewModel.loadProfile()
-    }
-    
-    LaunchedEffect(uiState.errorMessage) {
-        uiState.errorMessage?.let { message ->
-            snackBarHostState.showSnackbar(message)
-            profileViewModel.clearError()
-        }
-    }
-    
-    LaunchedEffect(uiState.successMessage) {
-        uiState.successMessage?.let { message ->
-            snackBarHostState.showSnackbar(message)
-            profileViewModel.clearSuccessMessage()
-            
-            // If the success message is about account deletion, trigger the callback
-            if (message.contains("deleted successfully")) {
-                onAccountDeleted()
-            }
-        }
     }
     
     Scaffold(
@@ -113,7 +95,21 @@ fun ProfileScreen(
                 )
             )
         },
-        snackbarHost = { SnackbarHost(hostState = snackBarHostState) }
+        snackbarHost = { 
+            MessageSnackbar(
+                hostState = snackBarHostState,
+                successMessage = uiState.successMessage,
+                errorMessage = uiState.errorMessage,
+                onSuccessMessageShown = { 
+                    profileViewModel.clearSuccessMessage()
+                    // If the success message is about account deletion, trigger the callback
+                    if (uiState.successMessage?.contains("deleted successfully") == true) {
+                        onAccountDeleted()
+                    }
+                },
+                onErrorMessageShown = { profileViewModel.clearError() }
+            )
+        }
     ) { paddingValues ->
         Box(
             modifier = Modifier

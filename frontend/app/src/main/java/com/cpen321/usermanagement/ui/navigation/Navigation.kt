@@ -15,6 +15,7 @@ import com.cpen321.usermanagement.ui.screen.ManageHobbiesScreen
 import com.cpen321.usermanagement.ui.screen.ProfileCompletionScreen
 import com.cpen321.usermanagement.ui.viewmodel.AuthViewModel
 import com.cpen321.usermanagement.ui.viewmodel.ProfileViewModel
+import android.util.Log
 
 object NavRoutes {
     const val AUTH = "auth"
@@ -34,21 +35,39 @@ fun AppNavigation(
     val authUiState by authViewModel.uiState.collectAsState()
     val profileUiState by profileViewModel.uiState.collectAsState()
     
-    // Handle navigation after authentication and profile loading
-    LaunchedEffect(authUiState.isAuthenticated, profileUiState.user) {
-        if (authUiState.isAuthenticated && profileUiState.user != null) {
-            val needsProfileCompletion = profileUiState.user?.bio == null || 
-                profileUiState.user?.bio?.isBlank() == true
+    // Handle navigation only when user first authenticates
+    LaunchedEffect(authUiState.isAuthenticated) {
+        if (authUiState.isAuthenticated) {
+            // Only navigate if we're currently on the AUTH screen
+            val currentRoute = navController.currentBackStackEntry?.destination?.route
+            Log.d("Navigation", "Auth state changed: isAuthenticated=true, currentRoute=$currentRoute")
             
-            if (needsProfileCompletion) {
-                navController.navigate(NavRoutes.PROFILE_COMPLETION) {
-                    popUpTo(NavRoutes.AUTH) { inclusive = true }
+            if (currentRoute == NavRoutes.AUTH) {
+                val needsProfileCompletion = profileUiState.user?.bio == null || 
+                    profileUiState.user?.bio?.isBlank() == true
+                
+                Log.d("Navigation", "Navigating from AUTH: needsProfileCompletion=$needsProfileCompletion")
+                
+                if (needsProfileCompletion) {
+                    navController.navigate(NavRoutes.PROFILE_COMPLETION) {
+                        popUpTo(NavRoutes.AUTH) { inclusive = true }
+                    }
+                } else {
+                    navController.navigate(NavRoutes.MAIN) {
+                        popUpTo(NavRoutes.AUTH) { inclusive = true }
+                    }
                 }
             } else {
-                navController.navigate(NavRoutes.MAIN) {
-                    popUpTo(NavRoutes.AUTH) { inclusive = true }
-                }
+                Log.d("Navigation", "Not on AUTH screen, skipping navigation. Current route: $currentRoute")
             }
+        }
+    }
+    
+    // Load profile when authentication state changes
+    LaunchedEffect(authUiState.isAuthenticated) {
+        if (authUiState.isAuthenticated && profileUiState.user == null) {
+            Log.d("Navigation", "Loading profile for authenticated user")
+            profileViewModel.loadProfile()
         }
     }
     
@@ -60,7 +79,6 @@ fun AppNavigation(
             AuthScreen(
                 authViewModel = authViewModel,
                 onAuthSuccess = {
-                    // Load profile data first, then navigate based on bio status
                     profileViewModel.loadProfile()
                 }
             )

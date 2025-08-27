@@ -46,6 +46,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.cpen321.usermanagement.R
 import com.cpen321.usermanagement.ui.viewmodel.ProfileViewModel
+import com.cpen321.usermanagement.ui.components.MessageSnackbar
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -58,20 +59,6 @@ fun ManageHobbiesScreen(
     
     LaunchedEffect(Unit) {
         profileViewModel.loadProfile()
-    }
-    
-    LaunchedEffect(uiState.errorMessage) {
-        uiState.errorMessage?.let { message ->
-            snackBarHostState.showSnackbar(message)
-            profileViewModel.clearError()
-        }
-    }
-    
-    LaunchedEffect(uiState.successMessage) {
-        uiState.successMessage?.let { message ->
-            snackBarHostState.showSnackbar(message)
-            profileViewModel.clearSuccessMessage()
-        }
     }
     
     Scaffold(
@@ -99,7 +86,15 @@ fun ManageHobbiesScreen(
                 )
             )
         },
-        snackbarHost = { SnackbarHost(hostState = snackBarHostState) }
+        snackbarHost = { 
+            MessageSnackbar(
+                hostState = snackBarHostState,
+                successMessage = uiState.successMessage,
+                errorMessage = uiState.errorMessage,
+                onSuccessMessageShown = { profileViewModel.clearSuccessMessage() },
+                onErrorMessageShown = { profileViewModel.clearError() }
+            )
+        }
     ) { paddingValues ->
         Box(
             modifier = Modifier

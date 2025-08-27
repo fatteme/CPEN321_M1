@@ -39,6 +39,7 @@ import androidx.lifecycle.lifecycleScope
 import com.cpen321.usermanagement.R
 import com.cpen321.usermanagement.ui.viewmodel.AuthViewModel
 import kotlinx.coroutines.launch
+import com.cpen321.usermanagement.ui.components.MessageSnackbar
 
 
 @Composable
@@ -56,12 +57,7 @@ fun AuthScreen(
         }
     }
     
-    LaunchedEffect(uiState.errorMessage) {
-        uiState.errorMessage?.let { message ->
-            snackBarHostState.showSnackbar(message)
-            authViewModel.clearError()
-        }
-    }
+
     
     Box(modifier = Modifier.fillMaxSize()) {
         Column(
@@ -136,8 +132,12 @@ fun AuthScreen(
             }
         }
         
-        SnackbarHost(
+        MessageSnackbar(
             hostState = snackBarHostState,
+            successMessage = null,
+            errorMessage = uiState.errorMessage,
+            onSuccessMessageShown = { },
+            onErrorMessageShown = { authViewModel.clearError() },
             modifier = Modifier.align(Alignment.BottomCenter)
         )
     }

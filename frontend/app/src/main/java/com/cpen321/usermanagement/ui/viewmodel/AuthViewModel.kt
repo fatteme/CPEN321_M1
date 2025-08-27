@@ -59,15 +59,6 @@ class AuthViewModel(context: Context) : ViewModel() {
         }
     }
     
-    fun logout() {
-        viewModelScope.launch {
-            authRepository.logout()
-                .onSuccess {
-                    _uiState.value = AuthUiState(isAuthenticated = false)
-                }
-        }
-    }
-    
     fun clearError() {
         _uiState.value = _uiState.value.copy(errorMessage = null)
     }

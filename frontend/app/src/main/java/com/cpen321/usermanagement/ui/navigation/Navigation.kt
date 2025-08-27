@@ -54,12 +54,6 @@ fun AppNavigation(
                 profileViewModel = profileViewModel,
                 onBackClick = {
                     navController.popBackStack()
-                },
-                onSignOut = {
-                    authViewModel.logout()
-                    navController.navigate(NavRoutes.AUTH) {
-                        popUpTo(0) { inclusive = true }
-                    }
                 }
             )
         }

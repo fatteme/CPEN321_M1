@@ -64,7 +64,6 @@ import com.cpen321.usermanagement.data.api.RetrofitClient
 fun ProfileScreen(
     profileViewModel: ProfileViewModel,
     onBackClick: () -> Unit,
-    onSignOut: () -> Unit
 ) {
     val uiState by profileViewModel.uiState.collectAsState()
     val snackBarHostState = remember { SnackbarHostState() }
@@ -284,24 +283,6 @@ fun ProfileScreen(
                             }
                             Text(
                                 text = if (uiState.isSaving) stringResource(R.string.saving) else stringResource(R.string.save_hobbies),
-                                style = MaterialTheme.typography.labelLarge,
-                                fontWeight = FontWeight.Medium
-                            )
-                        }
-                        
-                        // Sign Out Button
-                        OutlinedButton(
-                            onClick = onSignOut,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(56.dp),
-                            shape = RoundedCornerShape(28.dp),
-                            colors = ButtonDefaults.outlinedButtonColors(
-                                contentColor = MaterialTheme.colorScheme.error
-                            )
-                        ) {
-                            Text(
-                                text = stringResource(R.string.sign_out),
                                 style = MaterialTheme.typography.labelLarge,
                                 fontWeight = FontWeight.Medium
                             )

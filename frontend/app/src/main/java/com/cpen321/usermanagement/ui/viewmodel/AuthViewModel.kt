@@ -5,6 +5,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.cpen321.usermanagement.data.model.User
 import com.cpen321.usermanagement.data.repository.AuthRepository
+import com.cpen321.usermanagement.data.repository.UserRepository
+import com.cpen321.usermanagement.data.api.RetrofitClient
 import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -20,6 +22,7 @@ data class AuthUiState(
 
 class AuthViewModel(context: Context) : ViewModel() {
     private val authRepository = AuthRepository(context)
+    private val userRepository = UserRepository(context)
     
     private val _uiState = MutableStateFlow(AuthUiState())
     val uiState: StateFlow<AuthUiState> = _uiState.asStateFlow()
@@ -31,7 +34,23 @@ class AuthViewModel(context: Context) : ViewModel() {
     private fun checkAuthenticationStatus() {
         viewModelScope.launch {
             val isLoggedIn = authRepository.isLoggedIn()
-            _uiState.value = _uiState.value.copy(isAuthenticated = isLoggedIn)
+
+            if (isLoggedIn) {
+                val token = authRepository.getStoredToken()
+                token?.let { RetrofitClient.setAuthToken(it) }
+                
+                userRepository.getProfile().onSuccess { user ->
+                    _uiState.value = _uiState.value.copy(
+                        isAuthenticated = true,
+                        user = user
+                    )
+                }.onFailure { error ->
+                    authRepository.logout()
+                    _uiState.value = _uiState.value.copy(isAuthenticated = false)
+                }
+            } else {
+                _uiState.value = _uiState.value.copy(isAuthenticated = false)
+            }
         }
     }
 
@@ -50,10 +69,10 @@ class AuthViewModel(context: Context) : ViewModel() {
                         errorMessage = null
                     )
                 }
-                .onFailure {
+                .onFailure { error ->
                     _uiState.value = _uiState.value.copy(
                         isLoading = false,
-                        errorMessage = it.message
+                        errorMessage = error.message
                     )
                 }
         }

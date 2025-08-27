@@ -79,4 +79,9 @@ class AuthRepository(context: Context) {
     suspend fun isLoggedIn(): Boolean {
         return tokenManager.getToken().first() != null
     }
+
+    suspend fun getStoredToken(): String? {
+        val token = tokenManager.getTokenSync()
+        return token
+    }
 }

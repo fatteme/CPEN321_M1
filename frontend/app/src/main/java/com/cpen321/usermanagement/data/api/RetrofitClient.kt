@@ -34,7 +34,6 @@ object RetrofitClient {
         .build()
 
     val authService: AuthService = retrofit.create(AuthService::class.java)
-    val mediaService: MediaService = retrofit.create(MediaService::class.java)
     val userService: UserService = retrofit.create(UserService::class.java)
     val hobbyService: HobbyService = retrofit.create(HobbyService::class.java)
 
@@ -52,7 +51,7 @@ object RetrofitClient {
      * @return The complete URL that can be used to display the image
      */
     fun getImageUrl(imagePath: String): String {
-        return if (!imagePath.startsWith("http")) {
+        return if (imagePath.startsWith("uploads/")) {
             IMAGE_BASE_URL + imagePath
         } else {
             imagePath

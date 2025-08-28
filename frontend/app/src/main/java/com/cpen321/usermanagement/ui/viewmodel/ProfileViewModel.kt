@@ -105,38 +105,12 @@ class ProfileViewModel(context: Context) : ViewModel() {
     fun clearSuccessMessage() {
         _uiState.value = _uiState.value.copy(successMessage = null)
     }
-    
-    fun needsProfileCompletion(): Boolean {
-        val user = _uiState.value.user
-        return user?.bio == null || user.bio.isBlank()
-    }
-    
+
     fun uploadProfilePicture(imageUri: Uri) {
         viewModelScope.launch {
-            _uiState.value = _uiState.value.copy(isUploadingProfilePicture = true, errorMessage = null)
-            
-            try {
-                val result = userRepository.uploadProfilePicture(imageUri)
-                if (result.isSuccess) {
-                    val updatedUser = result.getOrNull()!!
-                    _uiState.value = _uiState.value.copy(
-                        isUploadingProfilePicture = false,
-                        user = updatedUser,
-                        successMessage = "Profile picture updated successfully!"
-                    )
-                } else {
-                    val errorMessage = result.exceptionOrNull()?.message ?: "Failed to upload profile picture"
-                    _uiState.value = _uiState.value.copy(
-                        isUploadingProfilePicture = false,
-                        errorMessage = errorMessage
-                    )
-                }
-            } catch (e: Exception) {
-                _uiState.value = _uiState.value.copy(
-                    isUploadingProfilePicture = false,
-                    errorMessage = e.message ?: "Failed to upload profile picture"
-                )
-            }
+            val currentUser = _uiState.value.user ?: return@launch
+            val updatedUser = currentUser.copy(profilePicture = imageUri.toString())
+            _uiState.value = _uiState.value.copy(isUploadingProfilePicture = false, user= updatedUser, errorMessage = null)
         }
     }
 
@@ -165,7 +139,7 @@ class ProfileViewModel(context: Context) : ViewModel() {
     fun deleteProfile() {
         viewModelScope.launch {
             _uiState.value = _uiState.value.copy(isSaving = true, errorMessage = null, successMessage = null)
-            
+
             val result = userRepository.deleteProfile()
             if (result.isSuccess) {
                 _uiState.value = _uiState.value.copy(

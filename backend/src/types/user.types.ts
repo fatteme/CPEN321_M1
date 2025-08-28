@@ -37,7 +37,6 @@ export const updateProfileSchema = z.object({
       message: 'Hobby must be in the available hobbies list',
     })
     .optional(),
-  profilePicture: z.string().min(1).optional(),
 });
 
 // Request types

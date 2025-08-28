@@ -45,7 +45,6 @@ class AuthViewModel(context: Context) : ViewModel() {
                         user = user
                     )
                 }.onFailure { error ->
-                    authRepository.logout()
                     _uiState.value = _uiState.value.copy(isAuthenticated = false)
                 }
             } else {
@@ -78,9 +77,9 @@ class AuthViewModel(context: Context) : ViewModel() {
         }
     }
     
-    fun logout() {
+    fun removeToken() {
         viewModelScope.launch {
-            authRepository.logout()
+            authRepository.removeToken()
                 .onSuccess {
                     _uiState.value = AuthUiState(isAuthenticated = false)
                 }

@@ -58,7 +58,6 @@ import com.cpen321.usermanagement.ui.components.MessageSnackbar
 fun ProfileScreen(
     profileViewModel: ProfileViewModel,
     onBackClick: () -> Unit,
-    onSignOut: () -> Unit,
     onManageProfileClick: () -> Unit,
     onManageHobbiesClick: () -> Unit,
     onAccountDeleted: () -> Unit
@@ -184,37 +183,6 @@ fun ProfileScreen(
                             )
                             Text(
                                 text = stringResource(R.string.manage_hobbies),
-                                style = MaterialTheme.typography.titleMedium,
-                                fontWeight = FontWeight.Medium,
-                                modifier = Modifier.padding(start = 16.dp)
-                            )
-                        }
-                    }
-                    
-                    // Sign Out Button
-                    Button(
-                        onClick = onSignOut,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(56.dp),
-                        shape = RoundedCornerShape(12.dp),
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = MaterialTheme.colorScheme.surfaceVariant,
-                            contentColor = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
-                    ) {
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.Start,
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Icon(
-                                imageVector = Icons.Outlined.Settings,
-                                contentDescription = null,
-                                modifier = Modifier.size(24.dp)
-                            )
-                            Text(
-                                text = stringResource(R.string.sign_out),
                                 style = MaterialTheme.typography.titleMedium,
                                 fontWeight = FontWeight.Medium,
                                 modifier = Modifier.padding(start = 16.dp)

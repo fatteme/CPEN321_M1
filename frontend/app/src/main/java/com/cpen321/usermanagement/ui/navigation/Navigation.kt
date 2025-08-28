@@ -109,12 +109,6 @@ fun AppNavigation(
                 onBackClick = {
                     navController.popBackStack()
                 },
-                onSignOut = {
-                    authViewModel.logout()
-                    navController.navigate(NavRoutes.AUTH) {
-                        popUpTo(0) { inclusive = true }
-                    }
-                },
                 onManageProfileClick = {
                     navController.navigate(NavRoutes.MANAGE_PROFILE)
                 },
@@ -122,7 +116,7 @@ fun AppNavigation(
                     navController.navigate(NavRoutes.MANAGE_HOBBIES)
                 },
                 onAccountDeleted = {
-                    authViewModel.logout()
+                    authViewModel.removeToken()
                     navController.navigate(NavRoutes.AUTH) {
                         popUpTo(0) { inclusive = true }
                     }

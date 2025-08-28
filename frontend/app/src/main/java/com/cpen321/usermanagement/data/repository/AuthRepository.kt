@@ -70,7 +70,7 @@ class AuthRepository(context: Context) {
         }
     }
 
-    suspend fun logout(): Result<Unit> {
+    suspend fun removeToken(): Result<Unit> {
         tokenManager.clearToken()
         RetrofitClient.setAuthToken(null)
         return Result.success(Unit)

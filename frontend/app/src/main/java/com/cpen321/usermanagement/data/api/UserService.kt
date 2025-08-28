@@ -15,7 +15,4 @@ interface UserService {
     suspend fun updateProfile(
         @Body request: UpdateProfileRequest
     ): Response<ApiResponse<ProfileData>>
-
-    @DELETE("user/profile")
-    suspend fun deleteProfile(): Response<ApiResponse<Unit>>
 }

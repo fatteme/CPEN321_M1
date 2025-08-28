@@ -92,15 +92,9 @@ class UserRepository(private val context: Context) {
 
     suspend fun deleteProfile(): Result<Unit> {
         return try {
-            val response = userApiService.deleteProfile()
-            if (response.isSuccessful) {
-                tokenManager.clearToken()
-                RetrofitClient.setAuthToken(null)
-                Result.success(Unit)
-            } else {
-                val errorMessage = response.body()?.message ?: "Failed to delete profile."
-                Result.failure(Exception(errorMessage))
-            }
+            tokenManager.clearToken()
+            RetrofitClient.setAuthToken(null)
+            Result.success(Unit)
         } catch (e: Exception) {
             Result.failure(e)
         }

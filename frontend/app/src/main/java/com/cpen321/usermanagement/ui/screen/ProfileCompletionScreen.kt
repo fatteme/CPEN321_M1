@@ -50,8 +50,6 @@ fun ProfileCompletionScreen(
         }
     }
     
-
-    
     Box(modifier = Modifier.fillMaxSize()) {
         Column(
             modifier = Modifier

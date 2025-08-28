@@ -192,6 +192,7 @@ fun ManageProfileScreen(
                             label = { Text(stringResource(R.string.name)) },
                             modifier = Modifier.fillMaxWidth(),
                             singleLine = true,
+                            readOnly = true
                         )
                         
                         // Email Field
@@ -213,37 +214,8 @@ fun ManageProfileScreen(
                             modifier = Modifier.fillMaxWidth(),
                             minLines = 3,
                             maxLines = 5,
+                            readOnly = true
                         )
-                        
-                        // Save Button
-                        Button(
-                            onClick = { profileViewModel.updateProfile(name, bio ?: "") },
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(56.dp),
-                            shape = RoundedCornerShape(12.dp),
-                            colors = ButtonDefaults.buttonColors(
-                                containerColor = MaterialTheme.colorScheme.primary,
-                                contentColor = MaterialTheme.colorScheme.onPrimary
-                            ),
-                            enabled = !uiState.isSaving && 
-                                    ((name.isNotBlank() && name != originalName) || 
-                                     (bio != originalBio && bio?.isNotBlank() == true))
-                        ) {
-                            if (uiState.isSaving) {
-                                CircularProgressIndicator(
-                                    modifier = Modifier.size(20.dp),
-                                    color = MaterialTheme.colorScheme.onPrimary,
-                                    strokeWidth = 2.dp
-                                )
-                            } else {
-                                Text(
-                                    text = stringResource(R.string.save),
-                                    style = MaterialTheme.typography.titleMedium,
-                                    fontWeight = FontWeight.Medium
-                                )
-                            }
-                        }
                     }
                 }
             }

@@ -8,7 +8,7 @@ class HobbyRepository(context: Context) {
 
     suspend fun getAvailableHobbies(): Result<List<String>> {
         return try {
-            val response = apiService.getAvailableHobbies()
+            val response = apiService.getAvailableHobbies("") // token is handled using interceptor
             if (response.isSuccessful && response.body()?.data != null) {
                 Result.success(response.body()!!.data!!.hobbies)
             } else {

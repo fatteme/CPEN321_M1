@@ -17,7 +17,7 @@ class UserRepository(private val context: Context) {
 
     suspend fun getProfile(): Result<User> {
         return try {
-            val response = userApiService.getProfile()
+            val response = userApiService.getProfile("") // token is handled using interceptor
             if (response.isSuccessful && response.body()?.data != null) {
                 Result.success(response.body()!!.data!!.user)
             } else {
@@ -34,7 +34,7 @@ class UserRepository(private val context: Context) {
     suspend fun updateUserHobbies(hobbies: List<String>): Result<User> {
         return try {
             val updateRequest = UpdateProfileRequest(hobbies = hobbies)
-            val response = userApiService.updateProfile(updateRequest)
+            val response = userApiService.updateProfile("", updateRequest) // token is handled using interceptor
             if (response.isSuccessful && response.body()?.data != null) {
                 Result.success(response.body()!!.data!!.user)
             } else {
@@ -52,13 +52,13 @@ class UserRepository(private val context: Context) {
             val requestBody = file.asRequestBody("image/*".toMediaType())
             val multipartBody = MultipartBody.Part.createFormData("media", file.name, requestBody)
 
-            val uploadResponse = mediaApiService.uploadImage(multipartBody)
+            val uploadResponse = mediaApiService.uploadImage("", multipartBody) // token is handled using interceptor
 
             if (uploadResponse.isSuccessful && uploadResponse.body()?.data != null) {
                 val uploadData = uploadResponse.body()!!.data!!
                 val updateRequest = UpdateProfileRequest(profilePicture = uploadData.image.toString())
 
-                val updateResponse = userApiService.updateProfile(updateRequest)
+                val updateResponse = userApiService.updateProfile("", updateRequest)  // token is handled using interceptor
 
                 if (updateResponse.isSuccessful && updateResponse.body()?.data != null) {
                     Result.success(updateResponse.body()!!.data!!.user)
@@ -78,7 +78,7 @@ class UserRepository(private val context: Context) {
     suspend fun updateProfile(name: String, bio: String): Result<User> {
         return try {
             val updateRequest = UpdateProfileRequest(name = name, bio = bio)
-            val response = userApiService.updateProfile(updateRequest)
+            val response = userApiService.updateProfile("", updateRequest)  // token is handled using interceptor
             if (response.isSuccessful && response.body()?.data != null) {
                 Result.success(response.body()!!.data!!.user)
             } else {

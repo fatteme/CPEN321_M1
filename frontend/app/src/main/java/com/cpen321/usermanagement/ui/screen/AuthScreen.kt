@@ -45,7 +45,8 @@ import com.cpen321.usermanagement.ui.components.MessageSnackbar
 @Composable
 fun AuthScreen(
     authViewModel: AuthViewModel,
-    onAuthSuccess: () -> Unit
+    onAuthSuccess: () -> Unit,
+    successMessage: String? = null
 ) {
     val context = LocalContext.current
     val uiState by authViewModel.uiState.collectAsState()
@@ -56,6 +57,8 @@ fun AuthScreen(
             onAuthSuccess()
         }
     }
+    
+
     
 
     
@@ -134,7 +137,7 @@ fun AuthScreen(
         
         MessageSnackbar(
             hostState = snackBarHostState,
-            successMessage = null,
+            successMessage = successMessage,
             errorMessage = uiState.errorMessage,
             onSuccessMessageShown = { },
             onErrorMessageShown = { authViewModel.clearError() },

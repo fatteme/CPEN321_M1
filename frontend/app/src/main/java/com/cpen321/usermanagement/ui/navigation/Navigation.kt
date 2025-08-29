@@ -5,6 +5,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.navigation.NavHostController
+
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.cpen321.usermanagement.ui.screen.AuthScreen
@@ -75,6 +76,17 @@ fun AppNavigation(
         navController = navController,
         startDestination = NavRoutes.AUTH
     ) {
+        composable("${NavRoutes.AUTH}?successMessage={successMessage}") { backStackEntry ->
+            val successMessage = backStackEntry.arguments?.getString("successMessage")
+            AuthScreen(
+                authViewModel = authViewModel,
+                onAuthSuccess = {
+                    profileViewModel.loadProfile()
+                },
+                successMessage = successMessage
+            )
+        }
+        
         composable(NavRoutes.AUTH) {
             AuthScreen(
                 authViewModel = authViewModel,
@@ -123,7 +135,7 @@ fun AppNavigation(
                 },
                 onAccountDeleted = {
                     authViewModel.logout()
-                    navController.navigate(NavRoutes.AUTH) {
+                    navController.navigate("${NavRoutes.AUTH}?successMessage=Account deleted successfully!") {
                         popUpTo(0) { inclusive = true }
                     }
                 }

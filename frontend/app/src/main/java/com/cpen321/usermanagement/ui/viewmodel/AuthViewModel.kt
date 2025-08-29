@@ -59,7 +59,29 @@ class AuthViewModel(context: Context) : ViewModel() {
     
     fun handleGoogleSignInResult(credential: GoogleIdTokenCredential) {
         viewModelScope.launch {
-            authRepository.googleLogin(credential.idToken)
+            _uiState.value = _uiState.value.copy(isLoading = true)
+            authRepository.googleSignIn(credential.idToken)
+                .onSuccess { body ->
+                    _uiState.value = _uiState.value.copy(
+                        isLoading = false,
+                        isAuthenticated = true,
+                        user = body.user,
+                        errorMessage = null
+                    )
+                }
+                .onFailure { error ->
+                    _uiState.value = _uiState.value.copy(
+                        isLoading = false,
+                        errorMessage = error.message
+                    )
+                }
+        }
+    }
+
+    fun handleGoogleSignUpResult(credential: GoogleIdTokenCredential) {
+        viewModelScope.launch {
+            _uiState.value = _uiState.value.copy(isLoading = true)
+            authRepository.googleSignUp(credential.idToken)
                 .onSuccess { body ->
                     _uiState.value = _uiState.value.copy(
                         isLoading = false,

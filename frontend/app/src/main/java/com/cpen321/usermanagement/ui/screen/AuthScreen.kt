@@ -133,6 +133,52 @@ fun AuthScreen(
                     )
                 }
             }
+            
+            Spacer(modifier = Modifier.height(16.dp))
+            
+            // Google Sign-Up Button
+            Button(
+                onClick = {
+                    (context as? ComponentActivity)?.lifecycleScope?.launch {
+                        val result = authViewModel.signInWithGoogle(context)
+                        result.onSuccess { credential ->
+                            authViewModel.handleGoogleSignUpResult(credential)
+                            Log.d("SignUp", "Signed up: ${credential.id}")
+                        }.onFailure { e ->
+                            Log.e("SignUp", "Sign-up failed", e)
+                        }
+                    }
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(56.dp),
+                shape = RoundedCornerShape(28.dp),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = MaterialTheme.colorScheme.primary,
+                    contentColor = MaterialTheme.colorScheme.onPrimary
+                ),
+                elevation = ButtonDefaults.buttonElevation(defaultElevation = 2.dp),
+                enabled = !uiState.isLoading
+            ) {
+                if (uiState.isLoading) {
+                    CircularProgressIndicator(
+                        modifier = Modifier.size(24.dp),
+                        color = MaterialTheme.colorScheme.onPrimary
+                    )
+                } else {
+                    Image(
+                        painter = painterResource(id = R.drawable.ic_google),
+                        contentDescription = stringResource(R.string.google_logo),
+                        modifier = Modifier.size(24.dp)
+                    )
+                    Spacer(modifier = Modifier.size(8.dp))
+                    Text(
+                        text = stringResource(R.string.sign_up_with_google),
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.Medium
+                    )
+                }
+            }
         }
         
         MessageSnackbar(

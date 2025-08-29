@@ -45,35 +45,45 @@ export class AuthService {
     return jwt.sign(JSON.stringify(user), process.env.JWT_SECRET!);
   }
 
-  async authenticateWithGoogle(idToken: string): Promise<AuthResult> {
+  async signUpWithGoogle(idToken: string): Promise<AuthResult> {
     try {
       const googleUserInfo = await this.verifyGoogleToken(idToken);
 
-      const user = await this.findOrCreateUser(googleUserInfo);
+      // Check if user already exists
+      const existingUser = await userRepository.findByGoogleId(
+        googleUserInfo.googleId
+      );
+      if (existingUser) {
+        throw new Error('User already exists');
+      }
+
+      // Create new user
+      const user = await userRepository.create(googleUserInfo);
+      const token = this.generateAccessToken(user);
+
+      return { token, user };
+    } catch (error) {
+      logger.error('Sign up failed:', error);
+      throw error;
+    }
+  }
+
+  async signInWithGoogle(idToken: string): Promise<AuthResult> {
+    try {
+      const googleUserInfo = await this.verifyGoogleToken(idToken);
+
+      // Find existing user
+      const user = await userRepository.findByGoogleId(googleUserInfo.googleId);
+      if (!user) {
+        throw new Error('User not found');
+      }
 
       const token = this.generateAccessToken(user);
 
       return { token, user };
     } catch (error) {
-      logger.error('Authentication failed:', error);
+      logger.error('Sign in failed:', error);
       throw error;
-    }
-  }
-
-  private async findOrCreateUser(
-    googleUserInfo: GoogleUserInfo
-  ): Promise<IUser> {
-    try {
-      const user = await userRepository.findByGoogleId(googleUserInfo.googleId);
-
-      if (user) {
-        return user;
-      }
-
-      return await userRepository.create(googleUserInfo);
-    } catch (error) {
-      logger.error('Error in findOrCreateUser:', error);
-      throw new Error('Failed to process user');
     }
   }
 }

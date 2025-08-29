@@ -1,6 +1,7 @@
 package com.cpen321.usermanagement.data.repository
 
 import android.content.Context
+import android.util.Log
 import androidx.credentials.*
 import androidx.credentials.exceptions.GetCredentialException
 import com.cpen321.usermanagement.config.AppConfig
@@ -9,6 +10,7 @@ import com.cpen321.usermanagement.data.model.*
 import com.cpen321.usermanagement.data.storage.TokenManager
 import com.google.android.libraries.identity.googleid.*
 import kotlinx.coroutines.flow.first
+import org.json.JSONObject
 
 class AuthRepository(context: Context) {
     private val apiService = RetrofitClient.authService
@@ -52,17 +54,54 @@ class AuthRepository(context: Context) {
         }
     }
 
-    suspend fun googleLogin(tokenId: String): Result<AuthData> {
+    private fun parseErrorMessage(errorBodyString: String?, fallback: String): String {
+        if (errorBodyString.isNullOrEmpty()) return fallback
+        return try {
+            val json = JSONObject(errorBodyString)
+            json.optString("message", fallback)
+        } catch (e: Exception) {
+            fallback
+        }
+    }
+
+    suspend fun googleSignIn(tokenId: String): Result<AuthData> {
         val googleLoginReq = GoogleLoginRequest(tokenId)
         return try {
-            val response = apiService.googleLogin(googleLoginReq)
+            val response = apiService.googleSignIn(googleLoginReq)
             if (response.isSuccessful && response.body()?.data != null) {
                 val authData = response.body()!!.data!!
                 tokenManager.saveToken(authData.token)
                 RetrofitClient.setAuthToken(authData.token)
                 Result.success(authData)
             } else {
-                val errorMessage = response.body()?.message ?: "Failed to login with Google."
+                val errorBodyString = response.errorBody()?.string()
+                val errorMessage = parseErrorMessage(
+                    errorBodyString,
+                    response.body()?.message ?: "Failed to sign in with Google."
+                )
+                Log.d("AuthRepository", "Response error: $errorBodyString")
+                Result.failure(Exception(errorMessage))
+            }
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    suspend fun googleSignUp(tokenId: String): Result<AuthData> {
+        val googleLoginReq = GoogleLoginRequest(tokenId)
+        return try {
+            val response = apiService.googleSignUp(googleLoginReq)
+            if (response.isSuccessful && response.body()?.data != null) {
+                val authData = response.body()!!.data!!
+                tokenManager.saveToken(authData.token)
+                RetrofitClient.setAuthToken(authData.token)
+                Result.success(authData)
+            } else {
+                val errorBodyString = response.errorBody()?.string()
+                val errorMessage = parseErrorMessage(
+                    errorBodyString,
+                    response.body()?.message ?: "Failed to sign up with Google."
+                )
                 Result.failure(Exception(errorMessage))
             }
         } catch (e: Exception) {

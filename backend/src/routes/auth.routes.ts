@@ -8,9 +8,15 @@ const router = Router();
 const authController = new AuthController();
 
 router.post(
-  '/',
+  '/signup',
   validateBody(authenticateUserSchema),
-  authController.authenticateUser
+  authController.signUp
+);
+
+router.post(
+  '/signin',
+  validateBody(authenticateUserSchema),
+  authController.signIn
 );
 
 export default router;

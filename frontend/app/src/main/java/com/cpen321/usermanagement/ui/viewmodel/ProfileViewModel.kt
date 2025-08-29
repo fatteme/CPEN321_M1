@@ -110,7 +110,7 @@ class ProfileViewModel(context: Context) : ViewModel() {
         viewModelScope.launch {
             val currentUser = _uiState.value.user ?: return@launch
             val updatedUser = currentUser.copy(profilePicture = imageUri.toString())
-            _uiState.value = _uiState.value.copy(isUploadingProfilePicture = false, user= updatedUser, errorMessage = null)
+            _uiState.value = _uiState.value.copy(isUploadingProfilePicture = false, user= updatedUser, successMessage = "Profile picture updated successfully!")
         }
     }
 

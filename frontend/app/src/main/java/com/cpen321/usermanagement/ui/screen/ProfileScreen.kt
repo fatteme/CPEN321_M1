@@ -102,10 +102,6 @@ fun ProfileScreen(
                 errorMessage = uiState.errorMessage,
                 onSuccessMessageShown = { 
                     profileViewModel.clearSuccessMessage()
-                    // If the success message is about account deletion, trigger the callback
-                    if (uiState.successMessage?.contains("deleted successfully") == true) {
-                        onAccountDeleted()
-                    }
                 },
                 onErrorMessageShown = { profileViewModel.clearError() }
             )
@@ -247,6 +243,9 @@ fun ProfileScreen(
                     onClick = {
                         showDeleteAccountDialog = false
                         profileViewModel.deleteProfile()
+                        // Show success message and then navigate
+                        profileViewModel.showAccountDeletedSuccess()
+                        onAccountDeleted()
                     },
                     colors = ButtonDefaults.buttonColors(
                         containerColor = MaterialTheme.colorScheme.error

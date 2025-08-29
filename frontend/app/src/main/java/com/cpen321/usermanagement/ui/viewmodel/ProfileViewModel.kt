@@ -144,7 +144,7 @@ class ProfileViewModel(context: Context) : ViewModel() {
             if (result.isSuccess) {
                 _uiState.value = _uiState.value.copy(
                     isSaving = false,
-                    successMessage = "Account deleted successfully!"
+                    successMessage = null // Don't show success message here
                 )
             } else {
                 val errorMessage = result.exceptionOrNull()?.message ?: "Failed to delete account"
@@ -154,5 +154,11 @@ class ProfileViewModel(context: Context) : ViewModel() {
                 )
             }
         }
+    }
+
+    fun showAccountDeletedSuccess() {
+        _uiState.value = _uiState.value.copy(
+            successMessage = "Account deleted successfully!"
+        )
     }
 }

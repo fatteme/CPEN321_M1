@@ -65,7 +65,7 @@ fun ProfileScreen(
 ) {
     val uiState by profileViewModel.uiState.collectAsState()
     val snackBarHostState = remember { SnackbarHostState() }
-    var showDeleteAccountDialog by remember { mutableStateOf(false) }
+    var showDeleteProfileDialog by remember { mutableStateOf(false) }
     
     LaunchedEffect(Unit) {
         profileViewModel.loadProfile()
@@ -220,7 +220,7 @@ fun ProfileScreen(
                     
                     // Delete Account Button
                     Button(
-                        onClick = { showDeleteAccountDialog = true },
+                        onClick = { showDeleteProfileDialog = true },
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(56.dp),
@@ -254,9 +254,9 @@ fun ProfileScreen(
     }
     
     // Delete Account Confirmation Dialog
-    if (showDeleteAccountDialog) {
+    if (showDeleteProfileDialog) {
         AlertDialog(
-            onDismissRequest = { showDeleteAccountDialog = false },
+            onDismissRequest = { showDeleteProfileDialog = false },
             title = {
                 Text(
                     text = stringResource(R.string.delete_account),
@@ -273,7 +273,7 @@ fun ProfileScreen(
             confirmButton = {
                 Button(
                     onClick = {
-                        showDeleteAccountDialog = false
+                        showDeleteProfileDialog = false
                         profileViewModel.deleteProfile()
                         // Show success message and then navigate
                         profileViewModel.showAccountDeletedSuccess()
@@ -288,7 +288,7 @@ fun ProfileScreen(
             },
             dismissButton = {
                 OutlinedButton(
-                    onClick = { showDeleteAccountDialog = false }
+                    onClick = { showDeleteProfileDialog = false }
                 ) {
                     Text(stringResource(R.string.cancel))
                 }

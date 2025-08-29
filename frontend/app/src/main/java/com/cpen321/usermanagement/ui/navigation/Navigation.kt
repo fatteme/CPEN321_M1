@@ -36,19 +36,14 @@ fun AppNavigation(
     val authUiState by authViewModel.uiState.collectAsState()
     val profileUiState by profileViewModel.uiState.collectAsState()
     
-    // Handle navigation only when user first authenticates
     LaunchedEffect(authUiState.isAuthenticated) {
         if (authUiState.isAuthenticated) {
-            // Only navigate if we're currently on the AUTH screen
             val currentRoute = navController.currentBackStackEntry?.destination?.route
-            Log.d("Navigation", "Auth state changed: isAuthenticated=true, currentRoute=$currentRoute")
-            
-            if (currentRoute == NavRoutes.AUTH) {
+
+            if (currentRoute?.startsWith(NavRoutes.AUTH) == true) {
                 val needsProfileCompletion = profileUiState.user?.bio == null || 
                     profileUiState.user?.bio?.isBlank() == true
-                
-                Log.d("Navigation", "Navigating from AUTH: needsProfileCompletion=$needsProfileCompletion")
-                
+
                 if (needsProfileCompletion) {
                     navController.navigate(NavRoutes.PROFILE_COMPLETION) {
                         popUpTo(NavRoutes.AUTH) { inclusive = true }
@@ -58,17 +53,7 @@ fun AppNavigation(
                         popUpTo(NavRoutes.AUTH) { inclusive = true }
                     }
                 }
-            } else {
-                Log.d("Navigation", "Not on AUTH screen, skipping navigation. Current route: $currentRoute")
             }
-        }
-    }
-    
-    // Load profile when authentication state changes
-    LaunchedEffect(authUiState.isAuthenticated) {
-        if (authUiState.isAuthenticated && profileUiState.user == null) {
-            Log.d("Navigation", "Loading profile for authenticated user")
-            profileViewModel.loadProfile()
         }
     }
     

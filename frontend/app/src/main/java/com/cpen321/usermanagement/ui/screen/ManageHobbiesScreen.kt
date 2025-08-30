@@ -1,16 +1,15 @@
 package com.cpen321.usermanagement.ui.screen
 
-import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
@@ -29,9 +28,7 @@ import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -47,8 +44,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.cpen321.usermanagement.R
-import com.cpen321.usermanagement.ui.viewmodel.ProfileViewModel
 import com.cpen321.usermanagement.ui.components.MessageSnackbar
+import com.cpen321.usermanagement.ui.viewmodel.ProfileViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -58,13 +55,13 @@ fun ManageHobbiesScreen(
 ) {
     val uiState by profileViewModel.uiState.collectAsState()
     val snackBarHostState = remember { SnackbarHostState() }
-    
+
     LaunchedEffect(Unit) {
         if (uiState.user == null) {
             profileViewModel.loadProfile()
         }
     }
-    
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -90,7 +87,7 @@ fun ManageHobbiesScreen(
                 )
             )
         },
-        snackbarHost = { 
+        snackbarHost = {
             MessageSnackbar(
                 hostState = snackBarHostState,
                 successMessage = uiState.successMessage,
@@ -135,13 +132,13 @@ fun ManageHobbiesScreen(
                                 fontWeight = FontWeight.SemiBold,
                                 color = MaterialTheme.colorScheme.onSurface
                             )
-                            
+
                             Text(
                                 text = stringResource(R.string.select_hobbies),
                                 style = MaterialTheme.typography.bodyMedium,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
-                            
+
                             // Hobbies Grid with Vertical Chips
                             LazyVerticalGrid(
                                 columns = GridCells.Fixed(2),
@@ -175,7 +172,7 @@ fun ManageHobbiesScreen(
                             }
                         }
                     }
-                    
+
                     // Save Button
                     Button(
                         onClick = { profileViewModel.saveHobbies() },
@@ -198,7 +195,9 @@ fun ManageHobbiesScreen(
                             Spacer(modifier = Modifier.width(8.dp))
                         }
                         Text(
-                            text = if (uiState.isSaving) stringResource(R.string.saving) else stringResource(R.string.save_hobbies),
+                            text = if (uiState.isSaving) stringResource(R.string.saving) else stringResource(
+                                R.string.save_hobbies
+                            ),
                             style = MaterialTheme.typography.titleMedium,
                             fontWeight = FontWeight.Medium
                         )

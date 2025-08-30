@@ -34,7 +34,7 @@ fun UserManagementApp() {
     val context = LocalContext.current
     val authViewModel = AuthViewModel(context)
     val profileViewModel = ProfileViewModel(context)
-    
+
     Surface(
         modifier = Modifier.fillMaxSize(),
         color = MaterialTheme.colorScheme.background

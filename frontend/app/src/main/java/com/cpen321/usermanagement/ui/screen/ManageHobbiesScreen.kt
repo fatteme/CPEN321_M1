@@ -1,5 +1,6 @@
 package com.cpen321.usermanagement.ui.screen
 
+import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -59,7 +60,9 @@ fun ManageHobbiesScreen(
     val snackBarHostState = remember { SnackbarHostState() }
     
     LaunchedEffect(Unit) {
-        profileViewModel.loadProfile()
+        if (uiState.user == null) {
+            profileViewModel.loadProfile()
+        }
     }
     
     Scaffold(

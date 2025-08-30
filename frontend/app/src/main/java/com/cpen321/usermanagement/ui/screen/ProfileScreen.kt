@@ -66,11 +66,7 @@ fun ProfileScreen(
     val uiState by profileViewModel.uiState.collectAsState()
     val snackBarHostState = remember { SnackbarHostState() }
     var showDeleteProfileDialog by remember { mutableStateOf(false) }
-    
-    LaunchedEffect(Unit) {
-        profileViewModel.loadProfile()
-    }
-    
+
     Scaffold(
         topBar = {
             TopAppBar(

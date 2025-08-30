@@ -18,6 +18,7 @@ object MediaUtils {
                 }
                 file
             }
+
             else -> throw IllegalArgumentException("Unsupported URI scheme: ${uri.scheme}")
         }
     }

@@ -1,6 +1,7 @@
 package com.cpen321.usermanagement.data.api
 
-import com.cpen321.usermanagement.data.model.*
+import com.cpen321.usermanagement.data.model.ApiResponse
+import com.cpen321.usermanagement.data.model.UploadImageData
 import okhttp3.MultipartBody
 import retrofit2.Response
 import retrofit2.http.Multipart

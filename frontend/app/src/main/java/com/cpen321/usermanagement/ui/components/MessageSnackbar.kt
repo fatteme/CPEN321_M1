@@ -30,7 +30,7 @@ fun MessageSnackbar(
             onSuccessMessageShown()
         }
     }
-    
+
     // Handle error messages
     LaunchedEffect(errorMessage) {
         errorMessage?.let { message ->
@@ -41,7 +41,7 @@ fun MessageSnackbar(
             onErrorMessageShown()
         }
     }
-    
+
     // Render the SnackbarHost
     SnackbarHost(
         hostState = hostState,

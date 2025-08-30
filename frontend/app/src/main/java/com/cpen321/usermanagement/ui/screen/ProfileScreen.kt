@@ -15,15 +15,12 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.outlined.Delete
-import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material.icons.outlined.Favorite
 import androidx.compose.material.icons.outlined.Person
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -31,17 +28,15 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -49,9 +44,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.cpen321.usermanagement.R
-import com.cpen321.usermanagement.ui.viewmodel.ProfileViewModel
-import androidx.compose.ui.graphics.vector.ImageVector
 import com.cpen321.usermanagement.ui.components.MessageSnackbar
+import com.cpen321.usermanagement.ui.viewmodel.ProfileViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -66,11 +60,7 @@ fun ProfileScreen(
     val uiState by profileViewModel.uiState.collectAsState()
     val snackBarHostState = remember { SnackbarHostState() }
     var showDeleteProfileDialog by remember { mutableStateOf(false) }
-    
-    LaunchedEffect(Unit) {
-        profileViewModel.loadProfile()
-    }
-    
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -96,12 +86,12 @@ fun ProfileScreen(
                 )
             )
         },
-        snackbarHost = { 
+        snackbarHost = {
             MessageSnackbar(
                 hostState = snackBarHostState,
                 successMessage = uiState.successMessage,
                 errorMessage = uiState.errorMessage,
-                onSuccessMessageShown = { 
+                onSuccessMessageShown = {
                     profileViewModel.clearSuccessMessage()
                 },
                 onErrorMessageShown = { profileViewModel.clearError() }
@@ -155,7 +145,7 @@ fun ProfileScreen(
                             )
                         }
                     }
-                    
+
                     // Manage Hobbies Button
                     Button(
                         onClick = onManageHobbiesClick,
@@ -186,7 +176,7 @@ fun ProfileScreen(
                             )
                         }
                     }
-                    
+
                     // Sign Out Button
                     Button(
                         onClick = onSignOut,
@@ -217,7 +207,7 @@ fun ProfileScreen(
                             )
                         }
                     }
-                    
+
                     // Delete Account Button
                     Button(
                         onClick = { showDeleteProfileDialog = true },
@@ -252,7 +242,7 @@ fun ProfileScreen(
             }
         }
     }
-    
+
     // Delete Account Confirmation Dialog
     if (showDeleteProfileDialog) {
         AlertDialog(

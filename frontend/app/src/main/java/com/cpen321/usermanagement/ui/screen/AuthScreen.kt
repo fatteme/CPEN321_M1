@@ -17,7 +17,6 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -37,9 +36,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.lifecycleScope
 import com.cpen321.usermanagement.R
+import com.cpen321.usermanagement.ui.components.MessageSnackbar
 import com.cpen321.usermanagement.ui.viewmodel.AuthViewModel
 import kotlinx.coroutines.launch
-import com.cpen321.usermanagement.ui.components.MessageSnackbar
 
 
 @Composable
@@ -51,13 +50,13 @@ fun AuthScreen(
     val context = LocalContext.current
     val uiState by authViewModel.uiState.collectAsState()
     val snackBarHostState = remember { SnackbarHostState() }
-    
+
     LaunchedEffect(uiState.isAuthenticated) {
         if (uiState.isAuthenticated) {
             onAuthSuccess()
         }
     }
-    
+
     Box(modifier = Modifier.fillMaxSize()) {
         Column(
             modifier = Modifier
@@ -74,18 +73,18 @@ fun AuthScreen(
                 textAlign = TextAlign.Center,
                 color = MaterialTheme.colorScheme.primary
             )
-            
+
             Spacer(modifier = Modifier.height(16.dp))
-            
+
             Text(
                 text = stringResource(R.string.auth_message),
                 style = MaterialTheme.typography.bodyLarge,
                 textAlign = TextAlign.Center,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
-            
+
             Spacer(modifier = Modifier.height(48.dp))
-            
+
             // Google Sign-In Button
             Button(
                 onClick = {
@@ -129,9 +128,9 @@ fun AuthScreen(
                     )
                 }
             }
-            
+
             Spacer(modifier = Modifier.height(16.dp))
-            
+
             // Google Sign-Up Button
             Button(
                 onClick = {
@@ -176,7 +175,7 @@ fun AuthScreen(
                 }
             }
         }
-        
+
         MessageSnackbar(
             hostState = snackBarHostState,
             successMessage = successMessage,

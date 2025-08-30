@@ -5,18 +5,16 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.navigation.NavHostController
-
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.cpen321.usermanagement.ui.screen.AuthScreen
 import com.cpen321.usermanagement.ui.screen.MainScreen
-import com.cpen321.usermanagement.ui.screen.ProfileScreen
-import com.cpen321.usermanagement.ui.screen.ManageProfileScreen
 import com.cpen321.usermanagement.ui.screen.ManageHobbiesScreen
+import com.cpen321.usermanagement.ui.screen.ManageProfileScreen
 import com.cpen321.usermanagement.ui.screen.ProfileCompletionScreen
+import com.cpen321.usermanagement.ui.screen.ProfileScreen
 import com.cpen321.usermanagement.ui.viewmodel.AuthViewModel
 import com.cpen321.usermanagement.ui.viewmodel.ProfileViewModel
-import android.util.Log
 
 object NavRoutes {
     const val AUTH = "auth"
@@ -35,14 +33,14 @@ fun AppNavigation(
 ) {
     val authUiState by authViewModel.uiState.collectAsState()
     val profileUiState by profileViewModel.uiState.collectAsState()
-    
+
     LaunchedEffect(authUiState.isAuthenticated) {
         if (authUiState.isAuthenticated) {
             val currentRoute = navController.currentBackStackEntry?.destination?.route
 
             if (currentRoute?.startsWith(NavRoutes.AUTH) == true) {
-                val needsProfileCompletion = profileUiState.user?.bio == null || 
-                    profileUiState.user?.bio?.isBlank() == true
+                val needsProfileCompletion = profileUiState.user?.bio == null ||
+                        profileUiState.user?.bio?.isBlank() == true
 
                 if (needsProfileCompletion) {
                     navController.navigate(NavRoutes.PROFILE_COMPLETION) {
@@ -56,7 +54,7 @@ fun AppNavigation(
             }
         }
     }
-    
+
     NavHost(
         navController = navController,
         startDestination = NavRoutes.AUTH
@@ -71,7 +69,7 @@ fun AppNavigation(
                 successMessage = successMessage
             )
         }
-        
+
         composable(NavRoutes.AUTH) {
             AuthScreen(
                 authViewModel = authViewModel,
@@ -80,7 +78,7 @@ fun AppNavigation(
                 }
             )
         }
-        
+
         composable(NavRoutes.PROFILE_COMPLETION) {
             ProfileCompletionScreen(
                 profileViewModel = profileViewModel,
@@ -91,7 +89,7 @@ fun AppNavigation(
                 }
             )
         }
-        
+
         composable(NavRoutes.MAIN) {
             MainScreen(
                 onProfileClick = {
@@ -99,7 +97,7 @@ fun AppNavigation(
                 }
             )
         }
-        
+
         composable(NavRoutes.PROFILE) {
             ProfileScreen(
                 profileViewModel = profileViewModel,
@@ -126,7 +124,7 @@ fun AppNavigation(
                 }
             )
         }
-        
+
         composable(NavRoutes.MANAGE_PROFILE) {
             ManageProfileScreen(
                 profileViewModel = profileViewModel,
@@ -135,7 +133,7 @@ fun AppNavigation(
                 }
             )
         }
-        
+
         composable(NavRoutes.MANAGE_HOBBIES) {
             ManageHobbiesScreen(
                 profileViewModel = profileViewModel,

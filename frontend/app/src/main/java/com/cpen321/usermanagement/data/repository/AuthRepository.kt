@@ -2,13 +2,19 @@ package com.cpen321.usermanagement.data.repository
 
 import android.content.Context
 import android.util.Log
-import androidx.credentials.*
+import androidx.credentials.CredentialManager
+import androidx.credentials.CustomCredential
+import androidx.credentials.GetCredentialRequest
+import androidx.credentials.GetCredentialResponse
 import androidx.credentials.exceptions.GetCredentialException
 import com.cpen321.usermanagement.config.AppConfig
 import com.cpen321.usermanagement.data.api.RetrofitClient
-import com.cpen321.usermanagement.data.model.*
+import com.cpen321.usermanagement.data.model.AuthData
+import com.cpen321.usermanagement.data.model.GoogleLoginRequest
 import com.cpen321.usermanagement.data.storage.TokenManager
-import com.google.android.libraries.identity.googleid.*
+import com.google.android.libraries.identity.googleid.GetSignInWithGoogleOption
+import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
+import com.google.android.libraries.identity.googleid.GoogleIdTokenParsingException
 import kotlinx.coroutines.flow.first
 import org.json.JSONObject
 
@@ -41,7 +47,8 @@ class AuthRepository(context: Context) {
             is CustomCredential -> {
                 if (credential.type == GoogleIdTokenCredential.TYPE_GOOGLE_ID_TOKEN_CREDENTIAL) {
                     try {
-                        val googleIdTokenCredential = GoogleIdTokenCredential.createFrom(credential.data)
+                        val googleIdTokenCredential =
+                            GoogleIdTokenCredential.createFrom(credential.data)
                         Result.success(googleIdTokenCredential)
                     } catch (e: GoogleIdTokenParsingException) {
                         Result.failure(e)
@@ -50,6 +57,7 @@ class AuthRepository(context: Context) {
                     Result.failure(Exception("Unexpected type of credential"))
                 }
             }
+
             else -> Result.failure(Exception("Unexpected type of credential"))
         }
     }
@@ -59,7 +67,7 @@ class AuthRepository(context: Context) {
         return try {
             val json = JSONObject(errorBodyString)
             json.optString("message", fallback)
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             fallback
         }
     }

@@ -3,7 +3,8 @@ package com.cpen321.usermanagement.data.repository
 import android.content.Context
 import android.net.Uri
 import com.cpen321.usermanagement.data.api.RetrofitClient
-import com.cpen321.usermanagement.data.model.*
+import com.cpen321.usermanagement.data.model.UpdateProfileRequest
+import com.cpen321.usermanagement.data.model.User
 import com.cpen321.usermanagement.data.storage.TokenManager
 import com.cpen321.usermanagement.util.MediaUtils.uriToFile
 import okhttp3.MediaType.Companion.toMediaType
@@ -56,14 +57,16 @@ class UserRepository(private val context: Context) {
 
             if (uploadResponse.isSuccessful && uploadResponse.body()?.data != null) {
                 val uploadData = uploadResponse.body()!!.data!!
-                val updateRequest = UpdateProfileRequest(profilePicture = uploadData.image.toString())
+                val updateRequest =
+                    UpdateProfileRequest(profilePicture = uploadData.image)
 
                 val updateResponse = userApiService.updateProfile(updateRequest)
 
                 if (updateResponse.isSuccessful && updateResponse.body()?.data != null) {
                     Result.success(updateResponse.body()!!.data!!.user)
                 } else {
-                    val errorMessage = updateResponse.body()?.message ?: "Failed to update profile picture."
+                    val errorMessage =
+                        updateResponse.body()?.message ?: "Failed to update profile picture."
                     Result.failure(Exception(errorMessage))
                 }
             } else {

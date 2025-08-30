@@ -3,10 +3,10 @@ package com.cpen321.usermanagement.ui.viewmodel
 import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.cpen321.usermanagement.data.api.RetrofitClient
 import com.cpen321.usermanagement.data.model.User
 import com.cpen321.usermanagement.data.repository.AuthRepository
 import com.cpen321.usermanagement.data.repository.UserRepository
-import com.cpen321.usermanagement.data.api.RetrofitClient
 import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -23,14 +23,14 @@ data class AuthUiState(
 class AuthViewModel(context: Context) : ViewModel() {
     private val authRepository = AuthRepository(context)
     private val userRepository = UserRepository(context)
-    
+
     private val _uiState = MutableStateFlow(AuthUiState())
     val uiState: StateFlow<AuthUiState> = _uiState.asStateFlow()
-    
+
     init {
         checkAuthenticationStatus()
     }
-    
+
     private fun checkAuthenticationStatus() {
         viewModelScope.launch {
             val isLoggedIn = authRepository.isLoggedIn()
@@ -38,7 +38,7 @@ class AuthViewModel(context: Context) : ViewModel() {
             if (isLoggedIn) {
                 val token = authRepository.getStoredToken()
                 token?.let { RetrofitClient.setAuthToken(it) }
-                
+
                 userRepository.getProfile().onSuccess { user ->
                     _uiState.value = _uiState.value.copy(
                         isAuthenticated = true,
@@ -57,7 +57,7 @@ class AuthViewModel(context: Context) : ViewModel() {
     suspend fun signInWithGoogle(context: Context): Result<GoogleIdTokenCredential> {
         return authRepository.signInWithGoogle(context)
     }
-    
+
     fun handleGoogleSignInResult(credential: GoogleIdTokenCredential) {
         viewModelScope.launch {
             _uiState.value = _uiState.value.copy(isLoading = true)
@@ -99,7 +99,7 @@ class AuthViewModel(context: Context) : ViewModel() {
                 }
         }
     }
-    
+
     fun logout() {
         viewModelScope.launch {
             authRepository.logout()
@@ -108,7 +108,7 @@ class AuthViewModel(context: Context) : ViewModel() {
                 }
         }
     }
-    
+
     fun clearError() {
         _uiState.value = _uiState.value.copy(errorMessage = null)
     }

@@ -1,11 +1,11 @@
 package com.cpen321.usermanagement.data.api
 
+import com.cpen321.usermanagement.config.AppConfig
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.util.concurrent.TimeUnit
-import com.cpen321.usermanagement.config.AppConfig
 
 object RetrofitClient {
     private const val BASE_URL = AppConfig.API_BASE_URL

@@ -14,7 +14,6 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -30,8 +29,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.cpen321.usermanagement.ui.viewmodel.ProfileViewModel
 import com.cpen321.usermanagement.ui.components.MessageSnackbar
+import com.cpen321.usermanagement.ui.viewmodel.ProfileViewModel
 
 @Composable
 fun ProfileCompletionScreen(
@@ -41,7 +40,7 @@ fun ProfileCompletionScreen(
     val uiState by profileViewModel.uiState.collectAsState()
     val snackBarHostState = remember { SnackbarHostState() }
     var bioText by remember { mutableStateOf("") }
-    
+
     LaunchedEffect(uiState.user) {
         uiState.user?.let { user ->
             if (user.bio != null && user.bio.isNotBlank()) {
@@ -49,9 +48,9 @@ fun ProfileCompletionScreen(
             }
         }
     }
-    
 
-    
+
+
     Box(modifier = Modifier.fillMaxSize()) {
         Column(
             modifier = Modifier
@@ -68,18 +67,18 @@ fun ProfileCompletionScreen(
                 textAlign = TextAlign.Center,
                 color = MaterialTheme.colorScheme.primary
             )
-            
+
             Spacer(modifier = Modifier.height(16.dp))
-            
+
             Text(
                 text = "Tell us a bit about yourself to get started",
                 style = MaterialTheme.typography.bodyLarge,
                 textAlign = TextAlign.Center,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
-            
+
             Spacer(modifier = Modifier.height(48.dp))
-            
+
             // Bio Input Field
             OutlinedTextField(
                 value = bioText,
@@ -92,9 +91,9 @@ fun ProfileCompletionScreen(
                 shape = RoundedCornerShape(12.dp),
                 enabled = !uiState.isSaving
             )
-            
+
             Spacer(modifier = Modifier.height(32.dp))
-            
+
             // Save Button
             Button(
                 onClick = {
@@ -124,9 +123,9 @@ fun ProfileCompletionScreen(
                     )
                 }
             }
-            
+
             Spacer(modifier = Modifier.height(16.dp))
-            
+
             // Skip Button (Optional)
             Button(
                 onClick = {
@@ -149,12 +148,12 @@ fun ProfileCompletionScreen(
                 )
             }
         }
-        
+
         MessageSnackbar(
             hostState = snackBarHostState,
             successMessage = uiState.successMessage,
             errorMessage = uiState.errorMessage,
-            onSuccessMessageShown = { 
+            onSuccessMessageShown = {
                 profileViewModel.clearSuccessMessage()
                 onProfileCompleted()
             },

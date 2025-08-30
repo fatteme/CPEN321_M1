@@ -4,7 +4,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -26,10 +25,8 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -38,22 +35,21 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.cpen321.usermanagement.R
+import com.cpen321.usermanagement.data.api.RetrofitClient
 import com.cpen321.usermanagement.ui.components.ImagePicker
 import com.cpen321.usermanagement.ui.components.MessageSnackbar
 import com.cpen321.usermanagement.ui.viewmodel.ProfileViewModel
-import com.cpen321.usermanagement.data.api.RetrofitClient
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -69,11 +65,13 @@ fun ManageProfileScreen(
     var bio by remember { mutableStateOf<String?>(null) }
     var originalName by remember { mutableStateOf("") }
     var originalBio by remember { mutableStateOf<String?>(null) }
-    
+
     LaunchedEffect(Unit) {
-        profileViewModel.loadProfile()
+        if (uiState.user == null) {
+            profileViewModel.loadProfile()
+        }
     }
-    
+
     LaunchedEffect(uiState.user) {
         uiState.user?.let { user ->
             name = user.name
@@ -83,7 +81,7 @@ fun ManageProfileScreen(
             originalBio = user.bio
         }
     }
-    
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -109,7 +107,7 @@ fun ManageProfileScreen(
                 )
             )
         },
-        snackbarHost = { 
+        snackbarHost = {
             MessageSnackbar(
                 hostState = snackBarHostState,
                 successMessage = uiState.successMessage,
@@ -162,7 +160,7 @@ fun ManageProfileScreen(
                                             .fillMaxSize()
                                             .clip(CircleShape)
                                     )
-                                    
+
                                     // Edit Button Overlay
                                     IconButton(
                                         onClick = { showImagePickerDialog = true },
@@ -184,7 +182,7 @@ fun ManageProfileScreen(
                                 }
                             }
                         }
-                        
+
                         // Name Field
                         OutlinedTextField(
                             value = name,
@@ -193,7 +191,7 @@ fun ManageProfileScreen(
                             modifier = Modifier.fillMaxWidth(),
                             singleLine = true,
                         )
-                        
+
                         // Email Field
                         OutlinedTextField(
                             value = email,
@@ -203,7 +201,7 @@ fun ManageProfileScreen(
                             singleLine = true,
                             enabled = false
                         )
-                        
+
                         // Bio Field
                         OutlinedTextField(
                             value = bio ?: "",
@@ -214,7 +212,7 @@ fun ManageProfileScreen(
                             minLines = 3,
                             maxLines = 5,
                         )
-                        
+
                         // Save Button
                         Button(
                             onClick = { profileViewModel.updateProfile(name, bio ?: "") },
@@ -226,9 +224,9 @@ fun ManageProfileScreen(
                                 containerColor = MaterialTheme.colorScheme.primary,
                                 contentColor = MaterialTheme.colorScheme.onPrimary
                             ),
-                            enabled = !uiState.isSaving && 
-                                    ((name.isNotBlank() && name != originalName) || 
-                                     (bio != originalBio && bio?.isNotBlank() == true))
+                            enabled = !uiState.isSaving &&
+                                    ((name.isNotBlank() && name != originalName) ||
+                                            (bio != originalBio && bio?.isNotBlank() == true))
                         ) {
                             if (uiState.isSaving) {
                                 CircularProgressIndicator(
@@ -249,7 +247,7 @@ fun ManageProfileScreen(
             }
         }
     }
-    
+
     // Image Picker Dialog
     if (showImagePickerDialog) {
         ImagePicker(
